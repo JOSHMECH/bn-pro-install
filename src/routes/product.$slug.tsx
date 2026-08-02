@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ProductThumb, ProductCard } from "@/components/product-card";
 import { whatsappLink } from "@/components/whatsapp";
-import { getProduct, products } from "@/lib/catalog";
+import { getProduct, products, type Product } from "@/lib/catalog";
 import { naira } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/product/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: Product };
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [withInstall, setWithInstall] = useState(false);
