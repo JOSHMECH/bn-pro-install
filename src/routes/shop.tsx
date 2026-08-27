@@ -22,7 +22,8 @@ export const Route = createFileRoute("/shop")({
       { property: "og:title", content: "Shop | BN Electricals and Home Appliances" },
       {
         property: "og:description",
-        content: "Genuine products at transparent prices, with installation and nationwide delivery.",
+        content:
+          "Genuine products at transparent prices, with installation and nationwide delivery.",
       },
     ],
   }),
@@ -40,7 +41,9 @@ function Shop() {
         {active ? active.name : "All products"}
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        {active ? active.blurb : "Every item in stock, priced in naira, with installation options where relevant."}
+        {active
+          ? active.blurb
+          : "Every item in stock, priced in naira, with installation options where relevant."}
       </p>
 
       <div className="mt-7 flex flex-wrap items-center gap-2">
@@ -51,7 +54,9 @@ function Shop() {
           to="/shop"
           search={{}}
           className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-            !category ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-secondary"
+            !category
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border hover:bg-secondary"
           }`}
         >
           All

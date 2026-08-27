@@ -1,10 +1,15 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# BN Electricals & Home Appliances — Agent Guidelines
+
+## Architecture Overview
+
+- **Framework**: TanStack Start (fullstack SSR with React 19 and Vite)
+- **Routing**: File-based routing via `@tanstack/react-router` located in `src/routes/`
+- **State & Data Fetching**: `@tanstack/react-query`
+- **Styling**: Tailwind CSS v4 with custom UI components in `src/components/ui/`
+- **Icons**: `lucide-react`
+
+## Development Rules
+
+- Use `src/routes/` for file-based route definitions.
+- Preserve the root layout `<Outlet />` in `src/routes/__root.tsx`.
+- Place reusable business logic in `src/lib/` and reusable UI components in `src/components/`.

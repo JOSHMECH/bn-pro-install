@@ -10,7 +10,13 @@ const icons = {
   "building-materials": Hammer,
 } as const;
 
-export function ProductThumb({ product, className = "" }: { product: Product; className?: string }) {
+export function ProductThumb({
+  product,
+  className = "",
+}: {
+  product: Product;
+  className?: string;
+}) {
   const Icon = icons[product.category];
   return (
     <div

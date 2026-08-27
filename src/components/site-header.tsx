@@ -83,18 +83,20 @@ export function SiteHeader() {
             <SheetContent side="right" className="w-[85vw] max-w-xs">
               <SheetTitle className="font-display">Menu</SheetTitle>
               <nav className="mt-6 flex flex-col gap-1">
-                {[...nav, { to: "/account", label: "My Account" }, { to: "/admin", label: "Admin" }].map(
-                  (item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setOpen(false)}
-                      className="rounded-md px-3 py-3 text-sm font-medium hover:bg-secondary"
-                    >
-                      {item.label}
-                    </Link>
-                  ),
-                )}
+                {[
+                  ...nav,
+                  { to: "/account", label: "My Account" },
+                  { to: "/admin", label: "Admin" },
+                ].map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className="rounded-md px-3 py-3 text-sm font-medium hover:bg-secondary"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </nav>
               <Button asChild className="mt-6 w-full">
                 <a href="tel:+2348030000000">Call us</a>

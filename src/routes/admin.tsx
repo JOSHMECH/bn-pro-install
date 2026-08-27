@@ -30,16 +30,62 @@ export const Route = createFileRoute("/admin")({
 });
 
 const requests = [
-  { ref: "BK-2291", customer: "Adaeze Okafor", service: "AC Installation", date: "18 Aug 2026", slot: "10:00 AM – 12:00 PM", status: "Confirmed" },
-  { ref: "BK-2293", customer: "Musa Bello", service: "Inverter Setup", date: "19 Aug 2026", slot: "8:00 AM – 10:00 AM", status: "Pending" },
-  { ref: "BK-2295", customer: "Chuka Eze", service: "TV Wall Mounting", date: "20 Aug 2026", slot: "2:00 PM – 4:00 PM", status: "Assigned" },
-  { ref: "BK-2298", customer: "Fatima Yusuf", service: "House Wiring", date: "22 Aug 2026", slot: "8:00 AM – 10:00 AM", status: "Pending" },
+  {
+    ref: "BK-2291",
+    customer: "Adaeze Okafor",
+    service: "AC Installation",
+    date: "18 Aug 2026",
+    slot: "10:00 AM – 12:00 PM",
+    status: "Confirmed",
+  },
+  {
+    ref: "BK-2293",
+    customer: "Musa Bello",
+    service: "Inverter Setup",
+    date: "19 Aug 2026",
+    slot: "8:00 AM – 10:00 AM",
+    status: "Pending",
+  },
+  {
+    ref: "BK-2295",
+    customer: "Chuka Eze",
+    service: "TV Wall Mounting",
+    date: "20 Aug 2026",
+    slot: "2:00 PM – 4:00 PM",
+    status: "Assigned",
+  },
+  {
+    ref: "BK-2298",
+    customer: "Fatima Yusuf",
+    service: "House Wiring",
+    date: "22 Aug 2026",
+    slot: "8:00 AM – 10:00 AM",
+    status: "Pending",
+  },
 ];
 
 const customers = [
-  { name: "Adaeze Okafor", phone: "+234 803 111 2233", city: "Lekki, Lagos", orders: 4, spend: 1860000 },
-  { name: "Musa Bello", phone: "+234 806 555 7788", city: "Wuse, Abuja", orders: 2, spend: 1620000 },
-  { name: "Chuka Eze", phone: "+234 812 909 3344", city: "GRA, Port Harcourt", orders: 1, spend: 516000 },
+  {
+    name: "Adaeze Okafor",
+    phone: "+234 803 111 2233",
+    city: "Lekki, Lagos",
+    orders: 4,
+    spend: 1860000,
+  },
+  {
+    name: "Musa Bello",
+    phone: "+234 806 555 7788",
+    city: "Wuse, Abuja",
+    orders: 2,
+    spend: 1620000,
+  },
+  {
+    name: "Chuka Eze",
+    phone: "+234 812 909 3344",
+    city: "GRA, Port Harcourt",
+    orders: 1,
+    spend: 516000,
+  },
   { name: "Fatima Yusuf", phone: "+234 809 220 1188", city: "Kano", orders: 3, spend: 940000 },
 ];
 
@@ -48,7 +94,9 @@ function Admin() {
     <div className="container-page py-10">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
         <div className="min-w-0">
-          <h1 className="truncate font-display text-2xl font-extrabold sm:text-3xl">Admin dashboard</h1>
+          <h1 className="truncate font-display text-2xl font-extrabold sm:text-3xl">
+            Admin dashboard
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Products, installation requests and customer records
           </p>
@@ -104,7 +152,9 @@ function Admin() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={r.status === "Pending" ? "secondary" : "default"}>{r.status}</Badge>
+                      <Badge variant={r.status === "Pending" ? "secondary" : "default"}>
+                        {r.status}
+                      </Badge>
                     </TableCell>
                   </TableRow>
                 ))}

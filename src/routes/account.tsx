@@ -18,20 +18,47 @@ export const Route = createFileRoute("/account")({
           "Sign in to track your BN Electricals orders, view installation bookings and download warranty records.",
       },
       { property: "og:title", content: "Customer Account | BN Electricals" },
-      { property: "og:description", content: "Track orders, bookings and warranties in one place." },
+      {
+        property: "og:description",
+        content: "Track orders, bookings and warranties in one place.",
+      },
     ],
   }),
   component: Account,
 });
 
 const demoOrders = [
-  { ref: "BN-8F2K1A", date: "12 Jul 2026", items: "LG 1.5HP AC × 1 (with installation)", total: 628000, status: "Installed" },
-  { ref: "BN-7QX9ZC", date: "28 Jun 2026", items: "Nocaco 4mm² Cable × 2", total: 304000, status: "Delivered" },
+  {
+    ref: "BN-8F2K1A",
+    date: "12 Jul 2026",
+    items: "LG 1.5HP AC × 1 (with installation)",
+    total: 628000,
+    status: "Installed",
+  },
+  {
+    ref: "BN-7QX9ZC",
+    date: "28 Jun 2026",
+    items: "Nocaco 4mm² Cable × 2",
+    total: 304000,
+    status: "Delivered",
+  },
 ];
 
 const demoBookings = [
-  { ref: "BK-2291", service: "Air Conditioner Installation", date: "18 Aug 2026", slot: "10:00 AM – 12:00 PM", status: "Confirmed" },
-  { ref: "BK-2264", service: "Lighting Installation", date: "02 Aug 2026", slot: "2:00 PM – 4:00 PM", status: "Completed" },
+  {
+    ref: "BK-2291",
+    service: "Air Conditioner Installation",
+    date: "18 Aug 2026",
+    slot: "10:00 AM – 12:00 PM",
+    status: "Confirmed",
+  },
+  {
+    ref: "BK-2264",
+    service: "Lighting Installation",
+    date: "02 Aug 2026",
+    slot: "2:00 PM – 4:00 PM",
+    status: "Completed",
+  },
 ];
 
 function Account() {
@@ -47,8 +74,12 @@ function Account() {
           </p>
           <Tabs defaultValue="signin" className="mt-6">
             <TabsList className="w-full">
-              <TabsTrigger value="signin" className="flex-1">Sign in</TabsTrigger>
-              <TabsTrigger value="signup" className="flex-1">Create account</TabsTrigger>
+              <TabsTrigger value="signin" className="flex-1">
+                Sign in
+              </TabsTrigger>
+              <TabsTrigger value="signup" className="flex-1">
+                Create account
+              </TabsTrigger>
             </TabsList>
             {["signin", "signup"].map((tab) => (
               <TabsContent key={tab} value={tab}>
@@ -68,11 +99,23 @@ function Account() {
                   )}
                   <div>
                     <Label htmlFor={`${tab}-email`}>Email address</Label>
-                    <Input id={`${tab}-email`} type="email" className="mt-2" maxLength={120} required />
+                    <Input
+                      id={`${tab}-email`}
+                      type="email"
+                      className="mt-2"
+                      maxLength={120}
+                      required
+                    />
                   </div>
                   <div>
                     <Label htmlFor={`${tab}-pass`}>Password</Label>
-                    <Input id={`${tab}-pass`} type="password" className="mt-2" minLength={6} required />
+                    <Input
+                      id={`${tab}-pass`}
+                      type="password"
+                      className="mt-2"
+                      minLength={6}
+                      required
+                    />
                   </div>
                   <Button type="submit" className="w-full">
                     <LogIn className="size-4" /> {tab === "signin" ? "Sign in" : "Create account"}

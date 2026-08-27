@@ -43,7 +43,8 @@ export const Route = createFileRoute("/booking")({
       { property: "og:title", content: "Book an Installation | BN Electricals" },
       {
         property: "og:description",
-        content: "Pick a date and time slot for AC, TV, wiring, lighting, inverter or generator installation.",
+        content:
+          "Pick a date and time slot for AC, TV, wiring, lighting, inverter or generator installation.",
       },
     ],
   }),
@@ -72,9 +73,9 @@ function Booking() {
           <CheckCircle2 className="mx-auto size-12 text-gold" />
           <h1 className="mt-4 font-display text-2xl font-bold">Booking request received</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Thank you {form.name.split(" ")[0]}. We've logged your {chosen?.name.toLowerCase()} request
-            for <strong className="text-foreground">{form.date}</strong>, {form.slot}. A coordinator
-            will confirm the technician and final quote shortly.
+            Thank you {form.name.split(" ")[0]}. We've logged your {chosen?.name.toLowerCase()}{" "}
+            request for <strong className="text-foreground">{form.date}</strong>, {form.slot}. A
+            coordinator will confirm the technician and final quote shortly.
           </p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <Button asChild className="bg-gold text-gold-foreground hover:bg-gold/90">

@@ -13,10 +13,14 @@ export const Route = createFileRoute("/cart")({
       { title: "Your Cart | BN Electricals and Home Appliances" },
       {
         name: "description",
-        content: "Review your appliances and materials, add professional installation, then checkout securely.",
+        content:
+          "Review your appliances and materials, add professional installation, then checkout securely.",
       },
       { property: "og:title", content: "Your Cart | BN Electricals" },
-      { property: "og:description", content: "Products plus optional installation, priced clearly before checkout." },
+      {
+        property: "og:description",
+        content: "Products plus optional installation, priced clearly before checkout.",
+      },
     ],
   }),
   component: Cart,
@@ -48,7 +52,10 @@ function Cart() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
         <ul className="space-y-4">
           {detailed.map(({ product, line, lineTotal }) => (
-            <li key={product.slug} className="rounded-xl border border-border bg-card p-4 shadow-card">
+            <li
+              key={product.slug}
+              className="rounded-xl border border-border bg-card p-4 shadow-card"
+            >
               <div className="grid grid-cols-[5rem_minmax(0,1fr)] gap-4">
                 <ProductThumb product={product} className="size-20 shrink-0 rounded-lg" />
                 <div className="min-w-0">
@@ -65,18 +72,33 @@ function Cart() {
                         {naira(product.price)} each · {product.warranty}
                       </p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => remove(product.slug)} aria-label="Remove item">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => remove(product.slug)}
+                      aria-label="Remove item"
+                    >
                       <Trash2 className="size-4" />
                     </Button>
                   </div>
 
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center rounded-lg border border-border">
-                      <Button variant="ghost" size="icon" onClick={() => setQty(product.slug, line.qty - 1)} aria-label="Decrease">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setQty(product.slug, line.qty - 1)}
+                        aria-label="Decrease"
+                      >
                         <Minus className="size-4" />
                       </Button>
                       <span className="w-9 text-center text-sm font-semibold">{line.qty}</span>
-                      <Button variant="ghost" size="icon" onClick={() => setQty(product.slug, line.qty + 1)} aria-label="Increase">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setQty(product.slug, line.qty + 1)}
+                        aria-label="Increase"
+                      >
                         <Plus className="size-4" />
                       </Button>
                     </div>
@@ -128,7 +150,11 @@ function Cart() {
             <span className="text-sm font-semibold">Total</span>
             <span className="font-display text-2xl font-extrabold">{naira(total)}</span>
           </div>
-          <Button asChild size="lg" className="mt-5 w-full bg-gold text-gold-foreground hover:bg-gold/90">
+          <Button
+            asChild
+            size="lg"
+            className="mt-5 w-full bg-gold text-gold-foreground hover:bg-gold/90"
+          >
             <Link to="/checkout">Proceed to checkout</Link>
           </Button>
           <Button asChild variant="ghost" className="mt-2 w-full">

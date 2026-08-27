@@ -17,7 +17,8 @@ export const Route = createFileRoute("/services")({
       { property: "og:title", content: "Professional Installation Services | BN Electricals" },
       {
         property: "og:description",
-        content: "Certified Nigerian technicians for AC, TV, wiring, lighting, inverter and generator installation.",
+        content:
+          "Certified Nigerian technicians for AC, TV, wiring, lighting, inverter and generator installation.",
       },
     ],
   }),
@@ -38,7 +39,11 @@ function Services() {
               Our in-house technicians are vetted, uniformed and insured. Every job carries a
               workmanship warranty, and we clean up before we leave.
             </p>
-            <Button asChild size="lg" className="mt-7 bg-gold text-gold-foreground hover:bg-gold/90">
+            <Button
+              asChild
+              size="lg"
+              className="mt-7 bg-gold text-gold-foreground hover:bg-gold/90"
+            >
               <Link to="/booking">
                 <CalendarClock className="size-4" /> Book a technician
               </Link>

@@ -66,7 +66,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const productsTotal = detailed.reduce((s, d) => s + d.product.price * d.line.qty, 0);
     const installationTotal = detailed.reduce(
-      (s, d) => s + (d.line.installation && d.product.installFee ? d.product.installFee * d.line.qty : 0),
+      (s, d) =>
+        s + (d.line.installation && d.product.installFee ? d.product.installFee * d.line.qty : 0),
       0,
     );
 
@@ -86,7 +87,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 : l,
             );
           }
-          return [...prev, { slug, qty: opts?.qty ?? 1, installation: opts?.installation ?? false }];
+          return [
+            ...prev,
+            { slug, qty: opts?.qty ?? 1, installation: opts?.installation ?? false },
+          ];
         }),
       remove: (slug) => setLines((prev) => prev.filter((l) => l.slug !== slug)),
       setQty: (slug, qty) =>

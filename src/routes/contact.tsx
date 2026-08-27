@@ -18,7 +18,10 @@ export const Route = createFileRoute("/contact")({
           "Call, email or WhatsApp BN Electricals and Home Appliances for quotes on appliances, electrical materials, building supplies and installation.",
       },
       { property: "og:title", content: "Contact BN Electricals and Home Appliances" },
-      { property: "og:description", content: "Reach our Lagos showroom, sales line or WhatsApp support team." },
+      {
+        property: "og:description",
+        content: "Reach our Lagos showroom, sales line or WhatsApp support team.",
+      },
     ],
   }),
   component: Contact,
@@ -51,7 +54,10 @@ function Contact() {
               <Mail className="mt-0.5 size-5 shrink-0 text-gold" />
               <span>
                 <span className="block font-semibold">Email</span>
-                <a href="mailto:sales@bnelectricals.ng" className="text-muted-foreground hover:text-primary">
+                <a
+                  href="mailto:sales@bnelectricals.ng"
+                  className="text-muted-foreground hover:text-primary"
+                >
                   sales@bnelectricals.ng
                 </a>
               </span>
@@ -60,7 +66,9 @@ function Contact() {
               <MapPin className="mt-0.5 size-5 shrink-0 text-gold" />
               <span>
                 <span className="block font-semibold">Showroom</span>
-                <span className="text-muted-foreground">Head office & showroom, Lagos, Nigeria</span>
+                <span className="text-muted-foreground">
+                  Head office & showroom, Lagos, Nigeria
+                </span>
               </span>
             </li>
             <li className="flex gap-3">
@@ -73,7 +81,11 @@ function Contact() {
           </ul>
 
           <Button asChild size="lg" className="mt-8 bg-gold text-gold-foreground hover:bg-gold/90">
-            <a href={whatsappLink("Hello BN Electricals, I need a quote.")} target="_blank" rel="noopener noreferrer">
+            <a
+              href={whatsappLink("Hello BN Electricals, I need a quote.")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <MessageCircle className="size-4" /> Chat on WhatsApp
             </a>
           </Button>
@@ -95,15 +107,35 @@ function Contact() {
           <div className="mt-5 space-y-4">
             <div>
               <Label htmlFor="c-name">Full name</Label>
-              <Input id="c-name" className="mt-2" maxLength={80} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <Input
+                id="c-name"
+                className="mt-2"
+                maxLength={80}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
             <div>
               <Label htmlFor="c-email">Email address</Label>
-              <Input id="c-email" type="email" className="mt-2" maxLength={120} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              <Input
+                id="c-email"
+                type="email"
+                className="mt-2"
+                maxLength={120}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
             </div>
             <div>
               <Label htmlFor="c-msg">How can we help?</Label>
-              <Textarea id="c-msg" rows={6} maxLength={1000} className="mt-2" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+              <Textarea
+                id="c-msg"
+                rows={6}
+                maxLength={1000}
+                className="mt-2"
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+              />
             </div>
             <Button type="submit" className="w-full">
               Send message

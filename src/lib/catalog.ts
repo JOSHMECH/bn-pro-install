@@ -308,7 +308,12 @@ export const services: Service[] = [
     warranty: "6 months workmanship warranty",
     description:
       "Split and window unit installation with proper bracket mounting, vacuuming, gas check and drainage routing.",
-    includes: ["Bracket & wall drilling", "Copper piping up to 3m", "Vacuum & gas test", "Drain routing"],
+    includes: [
+      "Bracket & wall drilling",
+      "Copper piping up to 3m",
+      "Vacuum & gas test",
+      "Drain routing",
+    ],
   },
   {
     slug: "tv-wall-mounting",
@@ -337,7 +342,12 @@ export const services: Service[] = [
     warranty: "12 months workmanship warranty",
     description:
       "Full house or shop wiring, conduit work, distribution board population, earthing and certification.",
-    includes: ["Conduit & cable pulling", "DB & MCB installation", "Earthing pit", "Load testing report"],
+    includes: [
+      "Conduit & cable pulling",
+      "DB & MCB installation",
+      "Earthing pit",
+      "Load testing report",
+    ],
   },
   {
     slug: "lighting-installation",
@@ -347,7 +357,12 @@ export const services: Service[] = [
     warranty: "6 months workmanship warranty",
     description:
       "Panel lights, chandeliers, strip lighting and security floodlights fitted neatly with switching plans.",
-    includes: ["Ceiling cut-outs", "Driver wiring", "Switch grouping", "Dimmer setup where applicable"],
+    includes: [
+      "Ceiling cut-outs",
+      "Driver wiring",
+      "Switch grouping",
+      "Dimmer setup where applicable",
+    ],
   },
   {
     slug: "inverter-system-installation",
@@ -357,7 +372,12 @@ export const services: Service[] = [
     warranty: "12 months workmanship warranty",
     description:
       "Load audit, battery rack assembly, change-over wiring and commissioning with usage training.",
-    includes: ["Load audit", "Battery rack & cabling", "Change-over wiring", "Commissioning & training"],
+    includes: [
+      "Load audit",
+      "Battery rack & cabling",
+      "Change-over wiring",
+      "Commissioning & training",
+    ],
   },
   {
     slug: "generator-installation",

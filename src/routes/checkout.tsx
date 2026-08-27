@@ -161,23 +161,55 @@ function Checkout() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="name">Full name</Label>
-                <Input id="name" className="mt-2" maxLength={80} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                <Input
+                  id="name"
+                  className="mt-2"
+                  maxLength={80}
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
               </div>
               <div>
                 <Label htmlFor="phone">Phone number</Label>
-                <Input id="phone" type="tel" className="mt-2" maxLength={20} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                <Input
+                  id="phone"
+                  type="tel"
+                  className="mt-2"
+                  maxLength={20}
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="email">Email address</Label>
-                <Input id="email" type="email" className="mt-2" maxLength={120} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                <Input
+                  id="email"
+                  type="email"
+                  className="mt-2"
+                  maxLength={120}
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="address">Delivery address</Label>
-                <Input id="address" className="mt-2" maxLength={160} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                <Input
+                  id="address"
+                  className="mt-2"
+                  maxLength={160}
+                  value={form.address}
+                  onChange={(e) => setForm({ ...form, address: e.target.value })}
+                />
               </div>
               <div>
                 <Label htmlFor="city">City / town</Label>
-                <Input id="city" className="mt-2" maxLength={60} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+                <Input
+                  id="city"
+                  className="mt-2"
+                  maxLength={60}
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                />
               </div>
               <div>
                 <Label htmlFor="state">State</Label>
@@ -209,7 +241,14 @@ function Checkout() {
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="date">Installation date</Label>
-                  <Input id="date" type="date" min={today} className="mt-2 bg-background" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+                  <Input
+                    id="date"
+                    type="date"
+                    min={today}
+                    className="mt-2 bg-background"
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="slot">Time slot</Label>
@@ -228,7 +267,14 @@ function Checkout() {
                 </div>
                 <div className="sm:col-span-2">
                   <Label htmlFor="notes">Site notes (optional)</Label>
-                  <Textarea id="notes" rows={3} maxLength={600} className="mt-2 bg-background" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                  <Textarea
+                    id="notes"
+                    rows={3}
+                    maxLength={600}
+                    className="mt-2 bg-background"
+                    value={form.notes}
+                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  />
                 </div>
               </div>
             </section>
@@ -243,7 +289,9 @@ function Checkout() {
                   type="button"
                   onClick={() => setForm({ ...form, payment: p.id })}
                   className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-colors ${
-                    form.payment === p.id ? "border-gold bg-accent/50" : "border-border hover:bg-secondary"
+                    form.payment === p.id
+                      ? "border-gold bg-accent/50"
+                      : "border-border hover:bg-secondary"
                   }`}
                 >
                   <p.icon className="size-5 shrink-0 text-primary" />
@@ -255,7 +303,8 @@ function Checkout() {
               ))}
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <Lock className="size-3.5 text-gold" /> Secured checkout — your details are never shared.
+              <Lock className="size-3.5 text-gold" /> Secured checkout — your details are never
+              shared.
             </p>
           </section>
         </div>
@@ -296,7 +345,11 @@ function Checkout() {
             <span className="text-sm font-semibold">Total due</span>
             <span className="font-display text-2xl font-extrabold">{naira(grandTotal)}</span>
           </div>
-          <Button type="submit" size="lg" className="mt-5 w-full bg-gold text-gold-foreground hover:bg-gold/90">
+          <Button
+            type="submit"
+            size="lg"
+            className="mt-5 w-full bg-gold text-gold-foreground hover:bg-gold/90"
+          >
             Pay {naira(grandTotal)}
           </Button>
           <Button asChild variant="ghost" className="mt-2 w-full">

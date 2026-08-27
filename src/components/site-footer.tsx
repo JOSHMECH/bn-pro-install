@@ -89,7 +89,9 @@ export function SiteFooter() {
 
       <div className="border-t border-navy-foreground/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-navy-foreground/55 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} BN Electricals and Home Appliances. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} BN Electricals and Home Appliances. All rights reserved.
+          </p>
           <p>RC registered business · Lagos, Nigeria</p>
         </div>
       </div>

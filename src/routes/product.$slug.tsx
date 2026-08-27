@@ -28,7 +28,12 @@ export const Route = createFileRoute("/product/$slug")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Product unavailable | BN Electricals" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Product unavailable | BN Electricals" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     const { product } = loaderData;
     return {
@@ -51,12 +56,16 @@ function ProductPage() {
 
   const installFee = product.installFee ?? 0;
   const total = product.price * qty + (withInstall ? installFee * qty : 0);
-  const related = products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4);
+  const related = products
+    .filter((p) => p.category === product.category && p.slug !== product.slug)
+    .slice(0, 4);
 
   return (
     <div className="container-page py-8">
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link to="/" className="hover:text-primary">Home</Link>
+        <Link to="/" className="hover:text-primary">
+          Home
+        </Link>
         <ChevronRight className="size-3" />
         <Link to="/shop" search={{ category: product.category }} className="hover:text-primary">
           {product.category.replace("-", " ")}
@@ -67,7 +76,10 @@ function ProductPage() {
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         <div>
-          <ProductThumb product={product} className="aspect-4/3 w-full rounded-xl border border-border" />
+          <ProductThumb
+            product={product}
+            className="aspect-4/3 w-full rounded-xl border border-border"
+          />
           <div className="mt-4 grid grid-cols-3 gap-3">
             {[0, 1, 2].map((i) => (
               <ProductThumb
@@ -85,14 +97,18 @@ function ProductPage() {
           </p>
           <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">{product.name}</h1>
           {product.badge && (
-            <Badge className="mt-3 bg-gold text-gold-foreground hover:bg-gold">{product.badge}</Badge>
+            <Badge className="mt-3 bg-gold text-gold-foreground hover:bg-gold">
+              {product.badge}
+            </Badge>
           )}
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{product.summary}</p>
 
           <div className="mt-6 flex items-end gap-3">
             <span className="font-display text-3xl font-extrabold">{naira(product.price)}</span>
             {product.oldPrice && (
-              <span className="text-sm text-muted-foreground line-through">{naira(product.oldPrice)}</span>
+              <span className="text-sm text-muted-foreground line-through">
+                {naira(product.oldPrice)}
+              </span>
             )}
           </div>
 
@@ -145,7 +161,9 @@ function ProductPage() {
                   type="button"
                   onClick={() => setWithInstall(opt.v)}
                   className={`flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-colors ${
-                    withInstall === opt.v ? "border-gold bg-accent/50" : "border-border hover:bg-secondary"
+                    withInstall === opt.v
+                      ? "border-gold bg-accent/50"
+                      : "border-border hover:bg-secondary"
                   }`}
                 >
                   <span
@@ -164,11 +182,21 @@ function ProductPage() {
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <div className="flex items-center rounded-lg border border-border">
-              <Button variant="ghost" size="icon" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                aria-label="Decrease quantity"
+              >
                 <Minus className="size-4" />
               </Button>
               <span className="w-10 text-center text-sm font-semibold">{qty}</span>
-              <Button variant="ghost" size="icon" onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setQty((q) => q + 1)}
+                aria-label="Increase quantity"
+              >
                 <Plus className="size-4" />
               </Button>
             </div>
@@ -177,7 +205,9 @@ function ProductPage() {
               className="flex-1 bg-gold text-gold-foreground hover:bg-gold/90"
               onClick={() => {
                 add(product.slug, { qty, installation: withInstall });
-                toast.success("Added to cart", { description: `${product.name} · ${naira(total)}` });
+                toast.success("Added to cart", {
+                  description: `${product.name} · ${naira(total)}`,
+                });
               }}
             >
               Add to cart — {naira(total)}
@@ -197,7 +227,10 @@ function ProductPage() {
           <h2 className="font-display text-lg font-bold">Specifications</h2>
           <dl className="mt-4 divide-y divide-border text-sm">
             {product.specs.map((s) => (
-              <div key={s.label} className="grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-4 py-3">
+              <div
+                key={s.label}
+                className="grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)] gap-4 py-3"
+              >
                 <dt className="text-muted-foreground">{s.label}</dt>
                 <dd className="font-medium">{s.value}</dd>
               </div>

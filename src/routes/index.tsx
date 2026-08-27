@@ -39,10 +39,21 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const catIcons = { "home-appliances": AirVent, "electrical-materials": Zap, "building-materials": Hammer };
+const catIcons = {
+  "home-appliances": AirVent,
+  "electrical-materials": Zap,
+  "building-materials": Hammer,
+};
 
 function Home() {
-  const featured = products.filter((p) => ["lg-1-5hp-dual-inverter-ac", "hisense-55-inch-4k-smart-tv", "felicity-3-5kva-hybrid-inverter", "schneider-8-way-distribution-board"].includes(p.slug));
+  const featured = products.filter((p) =>
+    [
+      "lg-1-5hp-dual-inverter-ac",
+      "hisense-55-inch-4k-smart-tv",
+      "felicity-3-5kva-hybrid-inverter",
+      "schneider-8-way-distribution-board",
+    ].includes(p.slug),
+  );
 
   return (
     <>
@@ -59,8 +70,8 @@ function Home() {
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-navy-foreground/75">
               BN Electricals and Home Appliances supplies genuine home appliances, electrical
-              materials and building materials across Nigeria — and our certified technicians install
-              them properly, with warranty.
+              materials and building materials across Nigeria — and our certified technicians
+              install them properly, with warranty.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-gold text-gold-foreground hover:bg-gold/90">
@@ -144,7 +155,8 @@ function Home() {
                 <h3 className="mt-5 font-display text-lg font-bold">{c.name}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.blurb}</p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                  Browse <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                  Browse{" "}
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
             );
