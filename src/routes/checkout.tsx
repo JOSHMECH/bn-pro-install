@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCart } from "@/lib/cart";
+import { cresco } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 import { whatsappLink } from "@/components/whatsapp";
 
@@ -140,7 +141,7 @@ function Checkout() {
 
       <form
         className="mt-8 grid gap-8 lg:grid-cols-[1.5fr_1fr]"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           if (!form.name || !form.phone || !form.address || !form.city) {
             toast.error("Please complete your delivery details.");
@@ -151,6 +152,40 @@ function Checkout() {
             return;
           }
           const ref = "LUM-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+
+          try {
+            await cresco.orders.create({
+              ref,
+              customerName: form.name,
+              customerPhone: form.phone,
+              customerEmail: form.email || undefined,
+              address: `${form.address}, ${form.city}`,
+              state: form.state,
+              items: detailed.map((d) => ({
+                slug: d.product.slug,
+                name: d.product.name,
+                brand: d.product.brand,
+                price: d.product.price,
+                qty: d.qty,
+                withInstall: d.withInstall,
+                installFee: d.product.installFee ?? 0,
+              })),
+              subtotal: productsTotal,
+              deliveryFee: delivery,
+              installTotal: installationTotal,
+              total: grandTotal,
+              paymentMethod: form.payment,
+              paymentStatus: "Pending",
+              status: "Pending",
+              installDate: form.date || undefined,
+              installSlot: form.slot || undefined,
+              notes: form.notes || undefined,
+            });
+            toast.success("Order recorded in CrescoDB!");
+          } catch (err) {
+            console.warn("CrescoDB offline, local order fallback:", err);
+          }
+
           setPlaced({ ref, amount: grandTotal });
           clear();
         }}

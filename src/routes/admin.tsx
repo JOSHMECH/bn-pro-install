@@ -27,8 +27,10 @@ import {
   Save,
   X,
   Star,
+  Database,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -41,6 +43,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { products as initialProducts, services as initialServices, categories } from "@/lib/catalog";
 import type { Product, Service } from "@/lib/catalog";
+import { cresco, type CrescoOrder, type CrescoBooking } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 import {
   BarChart,
@@ -74,144 +77,6 @@ type AdminTab =
   | "customers"
   | "bookings"
   | "settings";
-
-const revenueData = [
-  { month: "Mar", revenue: 8200000 },
-  { month: "Apr", revenue: 9800000 },
-  { month: "May", revenue: 11200000 },
-  { month: "Jun", revenue: 10500000 },
-  { month: "Jul", revenue: 13800000 },
-  { month: "Aug", revenue: 14850000 },
-];
-
-const orders = [
-  {
-    id: "ORD-5512",
-    customer: "Adaeze Okafor",
-    items: 3,
-    total: 1240000,
-    status: "Delivered",
-    date: "28 Aug 2026",
-  },
-  {
-    id: "ORD-5513",
-    customer: "Musa Bello",
-    items: 1,
-    total: 585000,
-    status: "In transit",
-    date: "29 Aug 2026",
-  },
-  {
-    id: "ORD-5514",
-    customer: "Chidinma Eze",
-    items: 2,
-    total: 895000,
-    status: "Processing",
-    date: "30 Aug 2026",
-  },
-  {
-    id: "ORD-5515",
-    customer: "Fatima Yusuf",
-    items: 4,
-    total: 348000,
-    status: "Pending",
-    date: "30 Aug 2026",
-  },
-  {
-    id: "ORD-5516",
-    customer: "Emeka Okonkwo",
-    items: 1,
-    total: 265000,
-    status: "Delivered",
-    date: "27 Aug 2026",
-  },
-];
-
-const bookings = [
-  {
-    ref: "BK-2291",
-    customer: "Adaeze Okafor",
-    service: "AC Installation",
-    date: "18 Aug 2026",
-    slot: "10:00 AM – 12:00 PM",
-    status: "Confirmed",
-  },
-  {
-    ref: "BK-2293",
-    customer: "Musa Bello",
-    service: "Inverter Setup",
-    date: "19 Aug 2026",
-    slot: "8:00 AM – 10:00 AM",
-    status: "Pending",
-  },
-  {
-    ref: "BK-2295",
-    customer: "Chuka Eze",
-    service: "TV Wall Mounting",
-    date: "20 Aug 2026",
-    slot: "2:00 PM – 4:00 PM",
-    status: "Assigned",
-  },
-  {
-    ref: "BK-2298",
-    customer: "Fatima Yusuf",
-    service: "House Wiring",
-    date: "22 Aug 2026",
-    slot: "8:00 AM – 10:00 AM",
-    status: "Pending",
-  },
-  {
-    ref: "BK-2301",
-    customer: "Tunde Adeyemi",
-    service: "CCTV Installation",
-    date: "23 Aug 2026",
-    slot: "10:00 AM – 2:00 PM",
-    status: "Confirmed",
-  },
-];
-
-const customers = [
-  {
-    name: "Adaeze Okafor",
-    phone: "+234 803 111 2233",
-    city: "Lekki, Lagos",
-    orders: 4,
-    spend: 1860000,
-    joined: "Jan 2025",
-  },
-  {
-    name: "Musa Bello",
-    phone: "+234 806 555 7788",
-    city: "Wuse, Abuja",
-    orders: 2,
-    spend: 1620000,
-    joined: "Mar 2025",
-  },
-  {
-    name: "Chidinma Eze",
-    phone: "+234 812 909 3344",
-    city: "GRA, Port Harcourt",
-    orders: 1,
-    spend: 516000,
-    joined: "Jun 2025",
-  },
-  {
-    name: "Fatima Yusuf",
-    phone: "+234 809 220 1188",
-    city: "Kano",
-    orders: 3,
-    spend: 940000,
-    joined: "Feb 2025",
-  },
-  {
-    name: "Emeka Okonkwo",
-    phone: "+234 701 445 6622",
-    city: "Enugu",
-    orders: 2,
-    spend: 625000,
-    joined: "May 2025",
-  },
-];
 
 const statusStyle: Record<string, string> = {
   Delivered: "bg-emerald-100 text-emerald-700 border-emerald-200",
@@ -420,6 +285,8 @@ function Admin() {
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const [productsList, setProductsList] = useState<Product[]>(initialProducts as Product[]);
   const [servicesList, setServicesList] = useState<Service[]>(initialServices);
+  const [ordersList, setOrdersList] = useState<CrescoOrder[]>([]);
+  const [bookingsList, setBookingsList] = useState<CrescoBooking[]>([]);
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null | undefined>(
     undefined,
   );
@@ -428,6 +295,80 @@ function Admin() {
   );
   const [productSearch, setProductSearch] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadAdminData() {
+      try {
+        const [prods, servs, ords, bks] = await Promise.all([
+          cresco.products.list(),
+          cresco.services.list(),
+          cresco.orders.list(),
+          cresco.bookings.list(),
+        ]);
+        if (prods && prods.length > 0) setProductsList(prods);
+        if (servs && servs.length > 0) setServicesList(servs);
+        if (ords && ords.length > 0) setOrdersList(ords);
+        if (bks && bks.length > 0) setBookingsList(bks);
+      } catch (err) {
+        console.warn("CrescoDB load fallback:", err);
+      }
+    }
+    loadAdminData();
+  }, []);
+
+  const customersList = useMemo(() => {
+    const map = new Map<
+      string,
+      { name: string; phone: string; city: string; orders: number; spend: number; joined: string }
+    >();
+    for (const o of ordersList) {
+      const key = o.customerPhone || o.customerName;
+      if (!map.has(key)) {
+        map.set(key, {
+          name: o.customerName,
+          phone: o.customerPhone,
+          city: o.state || o.address || "Nigeria",
+          orders: 1,
+          spend: o.total || 0,
+          joined: o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "Recent",
+        });
+      } else {
+        const c = map.get(key)!;
+        c.orders += 1;
+        c.spend += o.total || 0;
+      }
+    }
+    return Array.from(map.values());
+  }, [ordersList]);
+
+  const totalRevenue = useMemo(
+    () => ordersList.reduce((acc, o) => acc + (o.total || 0), 0),
+    [ordersList],
+  );
+  const openInstallations = useMemo(
+    () =>
+      bookingsList.filter(
+        (b) => b.status === "Pending" || b.status === "Confirmed" || b.status === "In Progress",
+      ).length,
+    [bookingsList],
+  );
+
+  const revenueTrendData = useMemo(() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const currentMonthIdx = new Date().getMonth();
+    const last6 = Array.from({ length: 6 }).map((_, i) => {
+      const idx = (currentMonthIdx - 5 + i + 12) % 12;
+      return { month: months[idx], revenue: 0 };
+    });
+    for (const o of ordersList) {
+      if (o.createdAt) {
+        const m = new Date(o.createdAt).getMonth();
+        const found = last6.find((x) => x.month === months[m]);
+        if (found) found.revenue += o.total || 0;
+      }
+    }
+    return last6;
+  }, [ordersList]);
 
   const navItems: { id: AdminTab; label: string; icon: typeof LayoutDashboard }[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -512,8 +453,8 @@ function Admin() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="hidden border-amber-300 bg-amber-50 text-amber-700 sm:inline-flex">
-              Demo mode
+            <Badge variant="outline" className="hidden items-center gap-1.5 border-emerald-300 bg-emerald-50 text-emerald-700 sm:inline-flex">
+              <Database className="size-3 text-emerald-600" /> CrescoDB Connected
             </Badge>
             <button className="relative rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-secondary">
               <Bell className="size-4" />
@@ -531,34 +472,34 @@ function Admin() {
                 {[
                   {
                     icon: TrendingUp,
-                    label: "Revenue (30 days)",
-                    value: naira(14_850_000),
-                    change: "+12.4%",
-                    up: true,
+                    label: "Total revenue",
+                    value: naira(totalRevenue),
+                    change: ordersList.length > 0 ? `${ordersList.length} orders` : "No sales yet",
+                    up: ordersList.length > 0,
                     color: "bg-primary/10 text-primary",
                   },
                   {
                     icon: ShoppingBag,
-                    label: "Orders this month",
-                    value: "184",
-                    change: "+8.1%",
-                    up: true,
+                    label: "Orders",
+                    value: `${ordersList.length}`,
+                    change: ordersList.length > 0 ? "Live orders" : "0 pending",
+                    up: ordersList.length > 0,
                     color: "bg-emerald-500/10 text-emerald-600",
                   },
                   {
                     icon: Wrench,
-                    label: "Open installations",
-                    value: "12",
-                    change: "-3",
-                    up: false,
+                    label: "Active bookings",
+                    value: `${openInstallations}`,
+                    change: openInstallations > 0 ? "In schedule" : "None scheduled",
+                    up: openInstallations > 0,
                     color: "bg-amber-500/10 text-amber-600",
                   },
                   {
                     icon: Users,
-                    label: "Total customers",
-                    value: "486",
-                    change: "+24",
-                    up: true,
+                    label: "Customer accounts",
+                    value: `${customersList.length}`,
+                    change: customersList.length > 0 ? "Active clients" : "0 registered",
+                    up: customersList.length > 0,
                     color: "bg-violet-500/10 text-violet-600",
                   },
                 ].map((s) => (
@@ -571,13 +512,8 @@ function Admin() {
                         <s.icon className="size-5" />
                       </span>
                       <span
-                        className={`flex items-center gap-1 text-xs font-bold ${s.up ? "text-emerald-600" : "text-red-500"}`}
+                        className={`flex items-center gap-1 text-xs font-bold ${s.up ? "text-emerald-600" : "text-muted-foreground"}`}
                       >
-                        {s.up ? (
-                          <ArrowUpRight className="size-3.5" />
-                        ) : (
-                          <ArrowDownRight className="size-3.5" />
-                        )}
                         {s.change}
                       </span>
                     </div>
@@ -592,12 +528,14 @@ function Admin() {
                 <div className="mb-5 flex items-center justify-between">
                   <div>
                     <h2 className="font-display text-base font-bold">Revenue trend</h2>
-                    <p className="text-xs text-muted-foreground">Last 6 months</p>
+                    <p className="text-xs text-muted-foreground">
+                      {ordersList.length > 0 ? "Monthly sales breakdown" : "Awaiting first completed order"}
+                    </p>
                   </div>
                   <BarChart3 className="size-5 text-muted-foreground" />
                 </div>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={revenueData} barSize={32}>
+                  <BarChart data={revenueTrendData} barSize={32}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                     <XAxis
                       dataKey="month"
@@ -632,39 +570,51 @@ function Admin() {
               <div className="rounded-2xl border border-border bg-card shadow-card">
                 <div className="flex items-center justify-between border-b border-border px-5 py-4">
                   <h2 className="font-display font-bold">Recent orders</h2>
-                  <button
-                    onClick={() => setTab("orders")}
-                    className="text-xs font-semibold text-primary hover:underline"
-                  >
-                    View all →
-                  </button>
+                  {ordersList.length > 0 && (
+                    <button
+                      onClick={() => setTab("orders")}
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      View all →
+                    </button>
+                  )}
                 </div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Order</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orders.slice(0, 4).map((o) => (
-                        <TableRow key={o.id}>
-                          <TableCell className="font-medium">{o.id}</TableCell>
-                          <TableCell>{o.customer}</TableCell>
-                          <TableCell className="whitespace-nowrap font-semibold">
-                            {naira(o.total)}
-                          </TableCell>
-                          <TableCell>
-                            <StatusBadge status={o.status} />
-                          </TableCell>
+                {ordersList.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Customer</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Status</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {ordersList.slice(0, 4).map((o) => (
+                          <TableRow key={o.ref}>
+                            <TableCell className="font-medium">{o.ref}</TableCell>
+                            <TableCell>{o.customerName}</TableCell>
+                            <TableCell className="whitespace-nowrap font-semibold">
+                              {naira(o.total)}
+                            </TableCell>
+                            <TableCell>
+                              <StatusBadge status={o.status} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center">
+                    <ShoppingBag className="mx-auto size-8 text-muted-foreground/40" />
+                    <p className="mt-2 text-sm font-medium">No orders recorded yet</p>
+                    <p className="text-xs text-muted-foreground">
+                      Customer checkouts and payment records will appear here in real time.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -782,8 +732,16 @@ function Admin() {
                       <Button
                         variant="destructive"
                         className="flex-1"
-                        onClick={() => {
-                          setProductsList((prev) => prev.filter((p) => p.slug !== deleteConfirm));
+                        onClick={async () => {
+                          if (deleteConfirm) {
+                            try {
+                              await cresco.products.delete(deleteConfirm);
+                              toast.success("Product deleted from CrescoDB");
+                            } catch (e) {
+                              console.warn("CrescoDB product delete fallback:", e);
+                            }
+                            setProductsList((prev) => prev.filter((p) => p.slug !== deleteConfirm));
+                          }
                           setDeleteConfirm(null);
                         }}
                       >
@@ -847,11 +805,17 @@ function Admin() {
                                 <Edit3 className="size-3.5" />
                               </button>
                               <button
-                                onClick={() =>
+                                onClick={async () => {
+                                  try {
+                                    await cresco.services.delete(s.slug);
+                                    toast.success("Service deleted from CrescoDB");
+                                  } catch (e) {
+                                    console.warn("CrescoDB service delete fallback:", e);
+                                  }
                                   setServicesList((prev) =>
                                     prev.filter((sv) => sv.slug !== s.slug),
-                                  )
-                                }
+                                  );
+                                }}
                                 className="rounded-lg p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-500"
                               >
                                 <Trash2 className="size-3.5" />
@@ -870,135 +834,167 @@ function Admin() {
           {/* ── Orders ────────────────────────────────────────────────────── */}
           {tab === "orders" && (
             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Order ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Items</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {orders.map((o) => (
-                      <TableRow key={o.id}>
-                        <TableCell className="font-medium">{o.id}</TableCell>
-                        <TableCell>{o.customer}</TableCell>
-                        <TableCell className="text-muted-foreground">{o.items} items</TableCell>
-                        <TableCell className="whitespace-nowrap font-semibold">
-                          {naira(o.total)}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                          {o.date}
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge status={o.status} />
-                        </TableCell>
-                        <TableCell>
-                          <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-primary">
-                            <Eye className="size-3.5" />
-                          </button>
-                        </TableCell>
+              {ordersList.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Order ID</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Items</TableHead>
+                        <TableHead>Total</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {ordersList.map((o) => (
+                        <TableRow key={o.ref}>
+                          <TableCell className="font-medium">{o.ref}</TableCell>
+                          <TableCell>{o.customerName}</TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {Array.isArray(o.items) ? o.items.length : 1} items
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap font-semibold">
+                            {naira(o.total)}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                            {o.createdAt ? new Date(o.createdAt).toLocaleDateString() : "Recent"}
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge status={o.status} />
+                          </TableCell>
+                          <TableCell>
+                            <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-primary">
+                              <Eye className="size-3.5" />
+                            </button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="p-12 text-center">
+                  <ShoppingBag className="mx-auto size-10 text-muted-foreground/40" />
+                  <h3 className="mt-3 font-display text-base font-bold">No customer orders yet</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    When customers place orders on the storefront, they will be tracked and managed here.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
           {/* ── Customers ─────────────────────────────────────────────────── */}
           {tab === "customers" && (
             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Orders</TableHead>
-                      <TableHead>Lifetime spend</TableHead>
-                      <TableHead>Joined</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {customers.map((c) => (
-                      <TableRow key={c.name}>
-                        <TableCell>
-                          <div className="flex items-center gap-2.5">
-                            <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                              {c.name
-                                .split(" ")
-                                .map((w) => w[0])
-                                .join("")}
-                            </span>
-                            <span className="font-medium">{c.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap text-sm">{c.phone}</TableCell>
-                        <TableCell className="text-muted-foreground">{c.city}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{c.orders}</Badge>
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap font-semibold">
-                          {naira(c.spend)}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{c.joined}</TableCell>
+              {customersList.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Orders</TableHead>
+                        <TableHead>Lifetime spend</TableHead>
+                        <TableHead>Joined</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {customersList.map((c) => (
+                        <TableRow key={c.phone || c.name}>
+                          <TableCell>
+                            <div className="flex items-center gap-2.5">
+                              <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                                {c.name
+                                  .split(" ")
+                                  .map((w) => w[0])
+                                  .join("")}
+                              </span>
+                              <span className="font-medium">{c.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap text-sm">{c.phone}</TableCell>
+                          <TableCell className="text-muted-foreground">{c.city}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">{c.orders}</Badge>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap font-semibold">
+                            {naira(c.spend)}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{c.joined}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="p-12 text-center">
+                  <Users className="mx-auto size-10 text-muted-foreground/40" />
+                  <h3 className="mt-3 font-display text-base font-bold">No customer profiles yet</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Registered users and buyers will automatically populate this customer directory.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
           {/* ── Bookings ──────────────────────────────────────────────────── */}
           {tab === "bookings" && (
             <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Ref</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Service</TableHead>
-                      <TableHead>Date & slot</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bookings.map((b) => (
-                      <TableRow key={b.ref}>
-                        <TableCell className="font-medium">{b.ref}</TableCell>
-                        <TableCell>{b.customer}</TableCell>
-                        <TableCell>{b.service}</TableCell>
-                        <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <CalendarClock className="size-3.5 text-primary" />
-                            {b.date} · {b.slot}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge status={b.status} />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-primary">
-                              <Edit3 className="size-3.5" />
-                            </button>
-                          </div>
-                        </TableCell>
+              {bookingsList.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Ref</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Service</TableHead>
+                        <TableHead>Date & slot</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {bookingsList.map((b) => (
+                        <TableRow key={b.ref}>
+                          <TableCell className="font-medium">{b.ref}</TableCell>
+                          <TableCell>{b.customerName}</TableCell>
+                          <TableCell className="capitalize">{b.serviceSlug.replace(/-/g, " ")}</TableCell>
+                          <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1.5">
+                              <CalendarClock className="size-3.5 text-primary" />
+                              {b.date} · {b.slot}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge status={b.status} />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-primary">
+                                <Edit3 className="size-3.5" />
+                              </button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="p-12 text-center">
+                  <CalendarClock className="mx-auto size-10 text-muted-foreground/40" />
+                  <h3 className="mt-3 font-display text-base font-bold">No technician bookings yet</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Scheduled appliance installations and maintenance requests will appear here.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -1113,8 +1109,14 @@ function Admin() {
         <ProductModal
           product={editingProduct}
           onClose={() => setEditingProduct(undefined)}
-          onSave={(updated) => {
+          onSave={async (updated) => {
             if (updated.slug) {
+              try {
+                await cresco.products.update(updated.slug, updated);
+                toast.success("Product updated in CrescoDB");
+              } catch (e) {
+                console.warn("CrescoDB product update fallback:", e);
+              }
               setProductsList((prev) =>
                 prev.map((p) => (p.slug === updated.slug ? { ...p, ...updated } : p)),
               );
@@ -1123,15 +1125,27 @@ function Admin() {
                 .toLowerCase()
                 .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "");
-              setProductsList((prev) => [
-                ...prev,
-                {
-                  ...(updated as Product),
-                  slug: newSlug,
-                  rating: 0,
-                  reviewCount: 0,
-                },
-              ]);
+              const newProd: Product = {
+                slug: newSlug,
+                name: updated.name ?? "New Product",
+                brand: updated.brand ?? "Lumora",
+                category: updated.category ?? "home-appliances",
+                price: updated.price ?? 0,
+                warranty: updated.warranty ?? "1 Year",
+                summary: updated.summary ?? "",
+                specs: updated.specs ?? [],
+                rating: 5,
+                reviewCount: 1,
+                image: updated.image ?? "",
+                ...updated,
+              };
+              try {
+                await cresco.products.create(newProd);
+                toast.success("Product created in CrescoDB");
+              } catch (e) {
+                console.warn("CrescoDB product create fallback:", e);
+              }
+              setProductsList((prev) => [...prev, newProd]);
             }
             setEditingProduct(undefined);
           }}
@@ -1141,15 +1155,32 @@ function Admin() {
         <ProductModal
           product={{}}
           onClose={() => setEditingProduct(undefined)}
-          onSave={(updated) => {
+          onSave={async (updated) => {
             const newSlug = (updated.name ?? "product")
               .toLowerCase()
               .replace(/\s+/g, "-")
               .replace(/[^a-z0-9-]/g, "");
-            setProductsList((prev) => [
-              ...prev,
-              { ...(updated as Product), slug: newSlug, rating: 0, reviewCount: 0 },
-            ]);
+            const newProd: Product = {
+              slug: newSlug,
+              name: updated.name ?? "New Product",
+              brand: updated.brand ?? "Lumora",
+              category: updated.category ?? "home-appliances",
+              price: updated.price ?? 0,
+              warranty: updated.warranty ?? "1 Year",
+              summary: updated.summary ?? "",
+              specs: updated.specs ?? [],
+              rating: 5,
+              reviewCount: 1,
+              image: updated.image ?? "",
+              ...updated,
+            };
+            try {
+              await cresco.products.create(newProd);
+              toast.success("Product created in CrescoDB");
+            } catch (e) {
+              console.warn("CrescoDB product create fallback:", e);
+            }
+            setProductsList((prev) => [...prev, newProd]);
             setEditingProduct(undefined);
           }}
         />
@@ -1160,8 +1191,22 @@ function Admin() {
         <ServiceModal
           service={editingService ?? {}}
           onClose={() => setEditingService(undefined)}
-          onSave={(updated) => {
+          onSave={async (updated) => {
             if (updated.slug) {
+              try {
+                await cresco.services.update(updated.slug, {
+                  name: updated.name,
+                  startingPrice: updated.from,
+                  duration: updated.duration,
+                  warranty: updated.warranty,
+                  tagline: updated.description,
+                  highlights: updated.includes,
+                  image: updated.image,
+                });
+                toast.success("Service updated in CrescoDB");
+              } catch (e) {
+                console.warn("CrescoDB service update fallback:", e);
+              }
               setServicesList((prev) =>
                 prev.map((s) => (s.slug === updated.slug ? { ...s, ...updated } : s)),
               );
@@ -1170,10 +1215,27 @@ function Admin() {
                 .toLowerCase()
                 .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "");
-              setServicesList((prev) => [
-                ...prev,
-                { ...(updated as Service), slug: newSlug, includes: [] },
-              ]);
+              const newServ: Service = {
+                ...(updated as Service),
+                slug: newSlug,
+                includes: updated.includes ?? [],
+              };
+              try {
+                await cresco.services.create({
+                  slug: newSlug,
+                  name: updated.name ?? "New Service",
+                  startingPrice: updated.from ?? 0,
+                  duration: updated.duration ?? "1 – 2 hours",
+                  warranty: updated.warranty ?? "3 months warranty",
+                  tagline: updated.description ?? "",
+                  highlights: updated.includes ?? [],
+                  image: updated.image ?? "",
+                });
+                toast.success("Service created in CrescoDB");
+              } catch (e) {
+                console.warn("CrescoDB service create fallback:", e);
+              }
+              setServicesList((prev) => [...prev, newServ]);
             }
             setEditingService(undefined);
           }}

@@ -1,0 +1,167 @@
+{
+  "name": "lumora",
+  "version": "1.0.0",
+  "models": [
+    {
+      "name": "Category",
+      "access": {
+        "read": ["*"],
+        "create": ["admin"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "slug", "type": "string", "unique": true, "required": true },
+        { "name": "name", "type": "string", "required": true },
+        { "name": "blurb", "type": "text" },
+        { "name": "icon", "type": "string" },
+        { "name": "color", "type": "string" },
+        { "name": "bgClass", "type": "string" },
+        { "name": "image", "type": "string" },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "Product",
+      "access": {
+        "read": ["*"],
+        "create": ["admin"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "slug", "type": "string", "unique": true, "required": true },
+        { "name": "name", "type": "string", "required": true },
+        { "name": "brand", "type": "string", "required": true },
+        { "name": "category", "type": "string", "required": true },
+        { "name": "price", "type": "number", "required": true },
+        { "name": "oldPrice", "type": "number" },
+        { "name": "installFee", "type": "number" },
+        { "name": "installTime", "type": "string" },
+        { "name": "warranty", "type": "string" },
+        { "name": "summary", "type": "text" },
+        { "name": "specs", "type": "json" },
+        { "name": "badge", "type": "string" },
+        { "name": "rating", "type": "number" },
+        { "name": "reviewCount", "type": "number" },
+        { "name": "colorHex", "type": "string" },
+        { "name": "image", "type": "string", "required": true },
+        { "name": "inStock", "type": "boolean" },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "Service",
+      "access": {
+        "read": ["*"],
+        "create": ["admin"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "slug", "type": "string", "unique": true, "required": true },
+        { "name": "name", "type": "string", "required": true },
+        { "name": "tagline", "type": "string" },
+        { "name": "startingPrice", "type": "number", "required": true },
+        { "name": "duration", "type": "string" },
+        { "name": "warranty", "type": "string" },
+        { "name": "category", "type": "string" },
+        { "name": "icon", "type": "string" },
+        { "name": "image", "type": "string" },
+        { "name": "highlights", "type": "json" },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "Order",
+      "access": {
+        "read": ["*"],
+        "create": ["*"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "ref", "type": "string", "unique": true, "required": true },
+        { "name": "customerName", "type": "string", "required": true },
+        { "name": "customerPhone", "type": "string", "required": true },
+        { "name": "customerEmail", "type": "string" },
+        { "name": "address", "type": "text", "required": true },
+        { "name": "state", "type": "string", "required": true },
+        { "name": "items", "type": "json", "required": true },
+        { "name": "subtotal", "type": "number" },
+        { "name": "deliveryFee", "type": "number" },
+        { "name": "installTotal", "type": "number" },
+        { "name": "total", "type": "number", "required": true },
+        { "name": "paymentMethod", "type": "string" },
+        { "name": "paymentStatus", "type": "string" },
+        { "name": "status", "type": "string", "required": true },
+        { "name": "installDate", "type": "string" },
+        { "name": "installSlot", "type": "string" },
+        { "name": "notes", "type": "text" },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "Booking",
+      "access": {
+        "read": ["*"],
+        "create": ["*"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "ref", "type": "string", "unique": true, "required": true },
+        { "name": "serviceSlug", "type": "string", "required": true },
+        { "name": "customerName", "type": "string", "required": true },
+        { "name": "customerPhone", "type": "string", "required": true },
+        { "name": "customerEmail", "type": "string" },
+        { "name": "address", "type": "text", "required": true },
+        { "name": "date", "type": "string", "required": true },
+        { "name": "slot", "type": "string", "required": true },
+        { "name": "status", "type": "string", "required": true },
+        { "name": "notes", "type": "text" },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "ContactMessage",
+      "access": {
+        "read": ["admin"],
+        "create": ["*"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "name", "type": "string", "required": true },
+        { "name": "phone", "type": "string" },
+        { "name": "email", "type": "string", "required": true },
+        { "name": "subject", "type": "string" },
+        { "name": "message", "type": "text", "required": true },
+        { "name": "createdAt", "type": "date" }
+      ]
+    },
+    {
+      "name": "Review",
+      "access": {
+        "read": ["*"],
+        "create": ["*"],
+        "update": ["admin"],
+        "delete": ["admin"]
+      },
+      "fields": [
+        { "name": "id", "type": "uuid", "primary": true },
+        { "name": "productSlug", "type": "string", "required": true },
+        { "name": "userName", "type": "string", "required": true },
+        { "name": "rating", "type": "number", "required": true },
+        { "name": "comment", "type": "text", "required": true },
+        { "name": "createdAt", "type": "date" }
+      ]
+    }
+  ]
+}

@@ -9,7 +9,11 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:dev": "cresco dev",
+    "db:start": "cresco start",
+    "db:seed": "bun scripts/seed-cresco.ts",
+    "db:audit": "cresco audit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

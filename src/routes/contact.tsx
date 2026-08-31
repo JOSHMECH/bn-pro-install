@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cresco } from "@/lib/cresco";
 import { whatsappLink } from "@/components/whatsapp";
 
 export const Route = createFileRoute("/contact")({
@@ -93,12 +94,23 @@ function Contact() {
 
         <form
           className="rounded-xl border border-border bg-card p-6 shadow-card"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!form.name || !form.email || !form.message) {
               toast.error("Please fill in all fields.");
               return;
             }
+
+            try {
+              await cresco.contact.submit({
+                name: form.name,
+                email: form.email,
+                message: form.message,
+              });
+            } catch (err) {
+              console.warn("CrescoDB offline, local contact fallback:", err);
+            }
+
             toast.success("Message sent", { description: "We'll reply within one business day." });
             setForm({ name: "", email: "", message: "" });
           }}

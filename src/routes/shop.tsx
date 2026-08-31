@@ -13,9 +13,11 @@ import {
   Home,
   SortAsc,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "@/components/product-card";
 import { categories, products, type CategorySlug } from "@/lib/catalog";
+import { cresco } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 
 type ShopSearch = {
@@ -149,10 +151,20 @@ function Shop() {
   const [minRating, setMinRating] = useState(0);
   const [installableOnly, setInstallableOnly] = useState(false);
 
+  const { data: dbProducts = products } = useQuery({
+    queryKey: ["cresco-products", search.category],
+    queryFn: () => cresco.products.list(search.category),
+    initialData: products,
+  });
+
+  const availableBrands = useMemo(() => {
+    return [...new Set(dbProducts.map((p) => p.brand))].sort();
+  }, [dbProducts]);
+
   const activeCategory = categories.find((c) => c.slug === search.category);
 
   // Filter products
-  let list = products.filter((p) => {
+  let list = dbProducts.filter((p) => {
     if (search.category && p.category !== search.category) return false;
     if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
     if (selectedBrands.size > 0 && !selectedBrands.has(p.brand)) return false;
@@ -248,7 +260,7 @@ function Shop() {
           Brand
         </p>
         <div className="max-h-48 space-y-1 overflow-y-auto pr-1">
-          {allBrands.map((b) => (
+          {availableBrands.map((b) => (
             <label key={b} className="flex cursor-pointer items-center gap-2.5 py-1">
               <input
                 type="checkbox"

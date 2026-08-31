@@ -18,12 +18,13 @@ import { Separator } from "@/components/ui/separator";
 import { ProductCard } from "@/components/product-card";
 import { whatsappLink } from "@/components/whatsapp";
 import { getProduct, products, type Product } from "@/lib/catalog";
+import { cresco } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/product/$slug")({
-  loader: ({ params }) => {
-    const product = getProduct(params.slug);
+  loader: async ({ params }) => {
+    const product = await cresco.products.getBySlug(params.slug);
     if (!product) throw notFound();
     return { product };
   },

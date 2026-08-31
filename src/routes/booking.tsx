@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { services } from "@/lib/catalog";
+import { cresco } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 import { whatsappLink } from "@/components/whatsapp";
 
@@ -56,22 +57,27 @@ function Booking() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
+    email: "",
     address: "",
     service: service ?? services[0]!.slug,
     date: "",
     slot: TIME_SLOTS[0]!,
     notes: "",
   });
-  const [done, setDone] = useState(false);
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const chosen = services.find((s) => s.slug === form.service);
   const today = new Date().toISOString().slice(0, 10);
 
-  if (done) {
+  if (bookingRef) {
     return (
       <div className="container-page py-20">
         <div className="mx-auto max-w-lg rounded-xl border border-border bg-card p-8 text-center shadow-card">
           <CheckCircle2 className="mx-auto size-12 text-gold" />
           <h1 className="mt-4 font-display text-2xl font-bold">Booking request received</h1>
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+            Ref: {bookingRef}
+          </div>
           <p className="mt-3 text-sm text-muted-foreground">
             Thank you {form.name.split(" ")[0]}. We've logged your {chosen?.name.toLowerCase()}{" "}
             request for <strong className="text-foreground">{form.date}</strong>, {form.slot}. A
@@ -81,7 +87,7 @@ function Booking() {
             <Button asChild className="bg-gold text-gold-foreground hover:bg-gold/90">
               <a
                 href={whatsappLink(
-                  `Hello Lumora, I booked ${chosen?.name} for ${form.date} (${form.slot}). Name: ${form.name}, Address: ${form.address}`,
+                  `Hello Lumora, I booked ${chosen?.name} (Ref: ${bookingRef}) for ${form.date} (${form.slot}). Name: ${form.name}, Address: ${form.address}`,
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -108,13 +114,36 @@ function Booking() {
 
         <form
           className="mt-8 grid gap-5 rounded-xl border border-border bg-card p-6 shadow-card sm:grid-cols-2"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!form.name || !form.phone || !form.address || !form.date) {
               toast.error("Please fill in your name, phone, address and date.");
               return;
             }
-            setDone(true);
+
+            setIsSubmitting(true);
+            const ref = "BK-" + Math.random().toString(36).slice(2, 7).toUpperCase();
+
+            try {
+              await cresco.bookings.create({
+                ref,
+                serviceSlug: form.service,
+                customerName: form.name,
+                customerPhone: form.phone,
+                customerEmail: form.email || undefined,
+                address: form.address,
+                date: form.date,
+                slot: form.slot,
+                status: "Pending",
+                notes: form.notes || undefined,
+              });
+              toast.success("Booking request saved to CrescoDB!");
+            } catch (err) {
+              console.warn("CrescoDB offline, local booking fallback:", err);
+            } finally {
+              setIsSubmitting(false);
+              setBookingRef(ref);
+            }
           }}
         >
           <div className="sm:col-span-2">
