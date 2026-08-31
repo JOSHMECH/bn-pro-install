@@ -10,13 +10,13 @@ import { naira } from "@/lib/format";
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Your Cart | BN Electricals and Home Appliances" },
+      { title: "Your Cart | Lumora" },
       {
         name: "description",
         content:
           "Review your appliances and materials, add professional installation, then checkout securely.",
       },
-      { property: "og:title", content: "Your Cart | BN Electricals" },
+      { property: "og:title", content: "Your Cart | Lumora" },
       {
         property: "og:description",
         content: "Products plus optional installation, priced clearly before checkout.",

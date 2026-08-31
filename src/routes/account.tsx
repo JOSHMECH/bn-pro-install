@@ -11,13 +11,13 @@ import { naira } from "@/lib/format";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Customer Login & Orders | BN Electricals" },
+      { title: "Customer Login & Orders | Lumora" },
       {
         name: "description",
         content:
-          "Sign in to track your BN Electricals orders, view installation bookings and download warranty records.",
+          "Sign in to track your Lumora orders, view installation bookings and download warranty records.",
       },
-      { property: "og:title", content: "Customer Account | BN Electricals" },
+      { property: "og:title", content: "Customer Account | Lumora" },
       {
         property: "og:description",
         content: "Track orders, bookings and warranties in one place.",
@@ -29,14 +29,14 @@ export const Route = createFileRoute("/account")({
 
 const demoOrders = [
   {
-    ref: "BN-8F2K1A",
+    ref: "LUM-8F2K1A",
     date: "12 Jul 2026",
     items: "LG 1.5HP AC × 1 (with installation)",
     total: 628000,
     status: "Installed",
   },
   {
-    ref: "BN-7QX9ZC",
+    ref: "LUM-7QX9ZC",
     date: "28 Jun 2026",
     items: "Nocaco 4mm² Cable × 2",
     total: 304000,

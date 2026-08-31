@@ -1,4 +1,4 @@
-# BN Electricals & Home Appliances — Agent Guidelines
+# Lumora — Agent Guidelines
 
 ## Architecture Overview
 

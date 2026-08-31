@@ -52,13 +52,13 @@ const PAYMENTS = [
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Secure Checkout | BN Electricals and Home Appliances" },
+      { title: "Secure Checkout | Lumora" },
       {
         name: "description",
         content:
           "Pay securely by card, bank transfer or USSD. Choose nationwide delivery and schedule your installation date and time slot.",
       },
-      { property: "og:title", content: "Secure Checkout | BN Electricals" },
+      { property: "og:title", content: "Secure Checkout | Lumora" },
       {
         property: "og:description",
         content: "Card, transfer and USSD payments with scheduled installation.",
@@ -103,7 +103,7 @@ function Checkout() {
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <Button asChild className="bg-gold text-gold-foreground hover:bg-gold/90">
               <a
-                href={whatsappLink(`Hello BN Electricals, my order reference is ${placed.ref}.`)}
+                href={whatsappLink(`Hello Lumora, my order reference is ${placed.ref}.`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

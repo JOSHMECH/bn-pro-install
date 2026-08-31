@@ -10,11 +10,12 @@ import {
   MessageCircle,
   Minus,
   Plus,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ProductThumb, ProductCard } from "@/components/product-card";
+import { ProductCard } from "@/components/product-card";
 import { whatsappLink } from "@/components/whatsapp";
 import { getProduct, products, type Product } from "@/lib/catalog";
 import { naira } from "@/lib/format";
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/product/$slug")({
     if (!loaderData) {
       return {
         meta: [
-          { title: "Product unavailable | BN Electricals" },
+        { title: `Product unavailable | Lumora` },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/product/$slug")({
     const { product } = loaderData;
     return {
       meta: [
-        { title: `${product.name} | BN Electricals` },
+        { title: `${product.name} | Lumora` },
         { name: "description", content: product.summary.slice(0, 155) },
         { property: "og:title", content: `${product.name} — ${naira(product.price)}` },
         { property: "og:description", content: product.summary.slice(0, 155) },
@@ -76,19 +77,58 @@ function ProductPage() {
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         <div>
-          <ProductThumb
-            product={product}
-            className="aspect-4/3 w-full rounded-xl border border-border"
-          />
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            {[0, 1, 2].map((i) => (
-              <ProductThumb
-                key={i}
-                product={product}
-                className="aspect-square w-full rounded-lg border border-border opacity-70"
+        {/* Product image area */}
+        <div
+          className={`relative flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${
+            product.category === "home-appliances"
+              ? "from-blue-500/10 to-blue-600/5"
+              : product.category === "electrical-materials"
+                ? "from-amber-500/10 to-amber-600/5"
+                : product.category === "building-materials"
+                  ? "from-violet-500/10 to-violet-600/5"
+                  : "from-emerald-500/10 to-emerald-600/5"
+          }`}
+        >
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-3 text-center">
+              <span className="font-display text-[7rem] font-black text-foreground/8 select-none leading-none">
+                {product.brand[0]}
+              </span>
+              <span className="rounded-full border border-border/60 bg-white/70 px-4 py-1.5 text-sm font-semibold text-muted-foreground backdrop-blur-sm">
+                {product.brand}
+              </span>
+            </div>
+          )}
+          <div className="absolute top-4 left-4">
+            <span className="rounded-lg border border-white/40 bg-white/90 px-3 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur-sm">
+              {product.brand}
+            </span>
+          </div>
+        </div>
+        {/* Rating row */}
+        <div className="mt-4 flex items-center gap-2">
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <Star
+                key={s}
+                className={`size-4 ${
+                  s <= Math.round(product.rating)
+                    ? "fill-amber-400 text-amber-400"
+                    : "fill-muted text-muted"
+                }`}
               />
             ))}
           </div>
+          <span className="text-sm font-medium text-muted-foreground">
+            {product.rating} ({product.reviewCount} customer reviews)
+          </span>
+        </div>
         </div>
 
         <div>
@@ -204,7 +244,7 @@ function ProductPage() {
               size="lg"
               className="flex-1 bg-gold text-gold-foreground hover:bg-gold/90"
               onClick={() => {
-                add(product.slug, { qty, installation: withInstall });
+                add({ slug: product.slug, name: product.name, price: product.price });
                 toast.success("Added to cart", {
                   description: `${product.name} · ${naira(total)}`,
                 });
@@ -214,7 +254,7 @@ function ProductPage() {
             </Button>
             <Button asChild size="lg" variant="outline">
               <a
-                href={whatsappLink(`Hello BN Electricals, I'd like to ask about: ${product.name}`)}
+                href={whatsappLink(`Hello Lumora, I'd like to ask about: ${product.name}`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -9,7 +9,7 @@ export function whatsappLink(message: string) {
 export function WhatsAppFab() {
   return (
     <a
-      href={whatsappLink("Hello BN Electricals, I'd like to make an enquiry.")}
+      href={whatsappLink("Hello Lumora, I'd like to make an enquiry.")}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full bg-[oklch(0.62_0.16_150)] px-4 py-3 text-sm font-semibold text-white shadow-premium transition-transform hover:scale-105"

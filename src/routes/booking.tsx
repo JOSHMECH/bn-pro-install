@@ -34,17 +34,17 @@ export const Route = createFileRoute("/booking")({
   },
   head: () => ({
     meta: [
-      { title: "Book an Installation Date | BN Electricals" },
+      { title: "Book an Installation Date | Lumora" },
       {
         name: "description",
         content:
           "Choose your installation service, preferred date and time slot. Our certified technician confirms your booking on WhatsApp within an hour.",
       },
-      { property: "og:title", content: "Book an Installation | BN Electricals" },
+      { property: "og:title", content: "Book an Installation | Lumora" },
       {
         property: "og:description",
         content:
-          "Pick a date and time slot for AC, TV, wiring, lighting, inverter or generator installation.",
+          "Pick a date and time slot for AC, TV, wiring, lighting, inverter, solar or smart home installation.",
       },
     ],
   }),
@@ -81,7 +81,7 @@ function Booking() {
             <Button asChild className="bg-gold text-gold-foreground hover:bg-gold/90">
               <a
                 href={whatsappLink(
-                  `Hello BN Electricals, I booked ${chosen?.name} for ${form.date} (${form.slot}). Name: ${form.name}, Address: ${form.address}`,
+                  `Hello Lumora, I booked ${chosen?.name} for ${form.date} (${form.slot}). Name: ${form.name}, Address: ${form.address}`,
                 )}
                 target="_blank"
                 rel="noopener noreferrer"

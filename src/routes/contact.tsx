@@ -11,16 +11,16 @@ import { whatsappLink } from "@/components/whatsapp";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact BN Electricals — Lagos Showroom & WhatsApp Support" },
+      { title: "Contact Lumora — Lagos Showroom & WhatsApp Support" },
       {
         name: "description",
         content:
-          "Call, email or WhatsApp BN Electricals and Home Appliances for quotes on appliances, electrical materials, building supplies and installation.",
+          "Call, email or WhatsApp Lumora for quotes on home appliances, electrical materials, building supplies, home solutions and professional installation.",
       },
-      { property: "og:title", content: "Contact BN Electricals and Home Appliances" },
+      { property: "og:title", content: "Contact Lumora" },
       {
         property: "og:description",
-        content: "Reach our Lagos showroom, sales line or WhatsApp support team.",
+        content: "Reach Lumora's Lagos showroom, sales line or WhatsApp support team.",
       },
     ],
   }),
@@ -55,10 +55,10 @@ function Contact() {
               <span>
                 <span className="block font-semibold">Email</span>
                 <a
-                  href="mailto:sales@bnelectricals.ng"
+                  href="mailto:hello@lumora.ng"
                   className="text-muted-foreground hover:text-primary"
                 >
-                  sales@bnelectricals.ng
+                  hello@lumora.ng
                 </a>
               </span>
             </li>
@@ -82,7 +82,7 @@ function Contact() {
 
           <Button asChild size="lg" className="mt-8 bg-gold text-gold-foreground hover:bg-gold/90">
             <a
-              href={whatsappLink("Hello BN Electricals, I need a quote.")}
+              href={whatsappLink("Hello Lumora, I need a quote.")}
               target="_blank"
               rel="noopener noreferrer"
             >

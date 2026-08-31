@@ -1,6 +1,8 @@
-# BN Electricals and Home Appliances Hub
+# Lumora — Home Appliances, Electrical & Building Materials Hub
 
-A modern, fullstack e-commerce and service booking platform for **BN Electricals and Home Appliances**, a premier Nigerian supplier of home appliances, electrical supplies, and building materials with certified professional installation services.
+A modern, fullstack e-commerce and service booking platform for **Lumora**, a premier Nigerian supplier of home appliances, electrical materials, building materials, and smart home solutions with certified professional installation services.
+
+> *"Illuminate Your Space. Build Your World."*
 
 ---
 
@@ -8,13 +10,14 @@ A modern, fullstack e-commerce and service booking platform for **BN Electricals
 
 ### 🛒 E-Commerce & Product Catalog
 
-- **Multi-Category Browsing**: Explore categories including Home Appliances, Electrical Materials, Building Supplies, and Lighting.
-- **Product Details**: High-resolution image galleries, detailed specifications, warranty coverage, and user reviews.
-- **Dynamic Installation Add-On**: Toggle professional installation fees directly on product pages and at checkout.
+- **4 Core Categories**: Home Appliances, Electrical Materials, Building Materials, and Home Solutions (Smart Home, CCTV, Solar & Inverters).
+- **Product Filtering & Sorting**: Instant client-side filtering by category, brand, price range, and sorting.
+- **Product Details & Ratings**: High-resolution image galleries, detailed specifications, warranty coverage, star ratings, and reviews.
+- **Dynamic Installation Add-On**: Toggle certified professional installation fees directly on product pages and at checkout.
 
 ### 🔧 Professional Installation & Booking
 
-- **Dedicated Services**: Air conditioner installation, TV wall mounting, inverter & solar systems, generator setup, ceiling fan installation, and structural electrical wiring.
+- **Dedicated Services**: Air conditioner installation, TV wall mounting, inverter & solar systems, smart security & CCTV, water pump setups, generator setup, ceiling fan installation, and structural electrical wiring.
 - **Interactive Booking System**: Schedule certified technicians with preferred dates, time slots, and service location details.
 
 ### 💳 Checkout & Nationwide Delivery
@@ -25,7 +28,7 @@ A modern, fullstack e-commerce and service booking platform for **BN Electricals
 ### 👤 Customer & Admin Portals
 
 - **Customer Account**: Track active orders, view past installation service history, and update delivery addresses.
-- **Admin Dashboard**: Manage product inventories, track customer installation bookings, and monitor order fulfillment.
+- **Admin Dashboard**: Comprehensive operations suite with business KPI metrics, revenue/booking charts (Recharts), full CRUD product management with modal editors, services management, customer directory, and booking calendar.
 
 ---
 
