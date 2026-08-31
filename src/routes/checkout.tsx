@@ -150,7 +150,7 @@ function Checkout() {
             toast.error("Choose an installation date and time slot.");
             return;
           }
-          const ref = "BN-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+          const ref = "LUM-" + Math.random().toString(36).slice(2, 8).toUpperCase();
           setPlaced({ ref, amount: grandTotal });
           clear();
         }}

@@ -90,10 +90,10 @@ export function SiteFooter() {
             </p>
             <a href="tel:+2348167054402" className="flex items-center gap-2 hover:text-gold">
               <Phone className="size-4 shrink-0 text-gold" />
-              +234 803 000 0000
+              +234 816 705 4402
             </a>
             <a
-              href="mailto:bnelectricalandhomeappliances@gmail.com"
+              href="mailto:hello@lumora.ng"
               className="flex items-center gap-2 hover:text-gold"
             >
               <Mail className="size-4 shrink-0 text-gold" />

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="lumora-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1338"/>
+      <stop offset="100%" stop-color="#0F0A1E"/>
+    </linearGradient>
+    <linearGradient id="bulb-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Icon Container -->
+  <rect width="64" height="64" rx="16" fill="url(#lumora-bg)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.35"/>
+  
+  <!-- Glowing Lightbulb -->
+  <g filter="url(#glow)" transform="translate(14, 10)">
+    <!-- Bulb Outline & Body -->
+    <path d="M18 0C10.268 0 4 6.268 4 14C4 18.8 6.4 23.04 10.1 25.54C11.3 26.35 12 27.72 12 29.17V31C12 32.1 12.9 33 14 33H22C23.1 33 24 32.1 24 31V29.17C24 27.72 24.7 26.35 25.9 25.54C29.6 23.04 32 18.8 32 14C32 6.268 25.732 0 18 0Z" fill="url(#bulb-gold)"/>
+    <!-- Screw Base -->
+    <path d="M14 35H22C22.55 35 23 35.45 23 36C23 36.55 22.55 37 22 37H14C13.45 37 13 36.55 13 36C13 35.45 13.45 35 14 35Z" fill="#FDE047"/>
+    <path d="M15 38H21C21.55 38 22 38.45 22 39C22 40.1 21.1 41 20 41H16C14.9 41 14 40.1 14 39C14 38.45 14.45 38 15 38Z" fill="#D97706"/>
+    <!-- Filament highlight -->
+    <path d="M18 6V16M13.5 11L22.5 11" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.95"/>
+  </g>
+</svg>
