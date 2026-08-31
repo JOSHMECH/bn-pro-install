@@ -44,7 +44,7 @@ export function SiteFooter() {
                 Get exclusive deals & product drops
               </h3>
               <p className="mt-1 text-sm text-white/65">
-                Join 12,000+ Nigerians who get our weekly deals newsletter.
+                Subscribe to get our weekly deals newsletter and installation guides.
               </p>
             </div>
             <form

@@ -17,8 +17,8 @@ export type Product = {
   summary: string;
   specs: { label: string; value: string }[];
   badge?: string;
-  rating: number;
-  reviewCount: number;
+  rating?: number;
+  reviewCount?: number;
   colorHex?: string;
   image: string;
 };

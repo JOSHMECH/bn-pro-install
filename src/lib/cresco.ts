@@ -24,6 +24,25 @@ export interface CrescoService extends Service {
   createdAt?: string;
 }
 
+function normalizeService(s: any): CrescoService {
+  return {
+    ...s,
+    from: s.from ?? s.startingPrice ?? 0,
+    startingPrice: s.startingPrice ?? s.from ?? 0,
+    description: s.description ?? s.tagline ?? "",
+    tagline: s.tagline ?? s.description ?? "",
+    includes: Array.isArray(s.includes) && s.includes.length > 0 ? s.includes : Array.isArray(s.highlights) ? s.highlights : [],
+    highlights: Array.isArray(s.highlights) && s.highlights.length > 0 ? s.highlights : Array.isArray(s.includes) ? s.includes : [],
+    duration: s.duration || "1 – 2 hours",
+    warranty: s.warranty || "3 months workmanship warranty",
+    image: s.image || "",
+  };
+}
+
+function isUuid(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
 export interface CrescoOrderItem {
   slug: string;
   name: string;
@@ -135,9 +154,12 @@ export class CrescoClient {
     if (!res.ok) {
       let errorMsg = `CrescoDB error ${res.status}: ${res.statusText}`;
       try {
-        const errorJson = await res.json();
-        if (errorJson.message || errorJson.error) {
-          errorMsg = errorJson.message || errorJson.error;
+        const text = await res.text();
+        if (text) {
+          const errorJson = JSON.parse(text);
+          if (errorJson.message || errorJson.error) {
+            errorMsg = errorJson.message || errorJson.error;
+          }
         }
       } catch {
         // ignore json parse error
@@ -145,7 +167,20 @@ export class CrescoClient {
       throw new Error(errorMsg);
     }
 
-    return (await res.json()) as T;
+    if (res.status === 204) {
+      return { success: true } as T;
+    }
+
+    const text = await res.text();
+    if (!text || text.trim() === "") {
+      return { success: true } as T;
+    }
+
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return { success: true } as T;
+    }
   }
 
   // ── AUTHENTICATION ──────────────────────────────────────────────────────────
@@ -196,9 +231,9 @@ export class CrescoClient {
   products = {
     list: async (category?: string): Promise<CrescoProduct[]> => {
       try {
-        const query = category ? `?where=category:eq:${encodeURIComponent(category)}` : "";
+        const query = category ? `?where=category:${encodeURIComponent(category)}` : "";
         const data = await this.request<CrescoProduct[]>(`/products${query}`);
-        if (Array.isArray(data) && data.length > 0) return data;
+        if (Array.isArray(data)) return data;
         return category
           ? fallbackProducts.filter((p) => p.category === category)
           : (fallbackProducts as CrescoProduct[]);
@@ -211,8 +246,8 @@ export class CrescoClient {
 
     getBySlug: async (slug: string): Promise<CrescoProduct | null> => {
       try {
-        const data = await this.request<CrescoProduct[]>(`/products?where=slug:eq:${encodeURIComponent(slug)}&limit=1`);
-        if (Array.isArray(data) && data.length > 0) return data[0]!;
+        const data = await this.request<CrescoProduct[]>(`/products?where=slug:${encodeURIComponent(slug)}&limit=1`);
+        if (Array.isArray(data)) return data.length > 0 ? data[0]! : null;
         const fallback = fallbackProducts.find((p) => p.slug === slug);
         return fallback ? (fallback as CrescoProduct) : null;
       } catch {
@@ -229,14 +264,24 @@ export class CrescoClient {
     },
 
     update: async (idOrSlug: string, updates: Partial<CrescoProduct>): Promise<CrescoProduct> => {
-      return await this.request<CrescoProduct>(`/products/${encodeURIComponent(idOrSlug)}`, {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.products.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<CrescoProduct>(`/products/${encodeURIComponent(id)}`, {
         method: "PATCH",
         body: JSON.stringify(updates),
       });
     },
 
     delete: async (idOrSlug: string): Promise<{ success: boolean }> => {
-      return await this.request<{ success: boolean }>(`/products/${encodeURIComponent(idOrSlug)}`, {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.products.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<{ success: boolean }>(`/products/${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
     },
@@ -247,10 +292,22 @@ export class CrescoClient {
     list: async (): Promise<CrescoCategory[]> => {
       try {
         const data = await this.request<CrescoCategory[]>("/categories");
-        if (Array.isArray(data) && data.length > 0) return data;
+        if (Array.isArray(data)) return data;
         return fallbackCategories as CrescoCategory[];
       } catch {
         return fallbackCategories as CrescoCategory[];
+      }
+    },
+
+    getBySlug: async (slug: string): Promise<CrescoCategory | null> => {
+      try {
+        const data = await this.request<CrescoCategory[]>(`/categories?where=slug:${encodeURIComponent(slug)}&limit=1`);
+        if (Array.isArray(data)) return data.length > 0 ? data[0]! : null;
+        const fallback = fallbackCategories.find((c) => c.slug === slug);
+        return fallback ? (fallback as CrescoCategory) : null;
+      } catch {
+        const fallback = fallbackCategories.find((c) => c.slug === slug);
+        return fallback ? (fallback as CrescoCategory) : null;
       }
     },
 
@@ -262,14 +319,24 @@ export class CrescoClient {
     },
 
     update: async (idOrSlug: string, updates: Partial<CrescoCategory>): Promise<CrescoCategory> => {
-      return await this.request<CrescoCategory>(`/categories/${encodeURIComponent(idOrSlug)}`, {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.categories.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<CrescoCategory>(`/categories/${encodeURIComponent(id)}`, {
         method: "PATCH",
         body: JSON.stringify(updates),
       });
     },
 
     delete: async (idOrSlug: string): Promise<{ success: boolean }> => {
-      return await this.request<{ success: boolean }>(`/categories/${encodeURIComponent(idOrSlug)}`, {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.categories.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<{ success: boolean }>(`/categories/${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
     },
@@ -279,42 +346,71 @@ export class CrescoClient {
   services = {
     list: async (): Promise<CrescoService[]> => {
       try {
-        const data = await this.request<CrescoService[]>("/services");
-        if (Array.isArray(data) && data.length > 0) return data;
-        return fallbackServices as CrescoService[];
+        const data = await this.request<any[]>("/services");
+        if (Array.isArray(data)) {
+          return data.map(normalizeService);
+        }
+        return (fallbackServices as CrescoService[]).map(normalizeService);
       } catch {
-        return fallbackServices as CrescoService[];
+        return (fallbackServices as CrescoService[]).map(normalizeService);
       }
     },
 
     getBySlug: async (slug: string): Promise<CrescoService | null> => {
       try {
-        const data = await this.request<CrescoService[]>(`/services?where=slug:eq:${encodeURIComponent(slug)}&limit=1`);
-        if (Array.isArray(data) && data.length > 0) return data[0]!;
+        const data = await this.request<any[]>(`/services?where=slug:${encodeURIComponent(slug)}&limit=1`);
+        if (Array.isArray(data)) return data.length > 0 ? normalizeService(data[0]) : null;
         const fallback = fallbackServices.find((s) => s.slug === slug);
-        return fallback ? (fallback as CrescoService) : null;
+        return fallback ? normalizeService(fallback) : null;
       } catch {
         const fallback = fallbackServices.find((s) => s.slug === slug);
-        return fallback ? (fallback as CrescoService) : null;
+        return fallback ? normalizeService(fallback) : null;
       }
     },
 
-    create: async (service: Omit<CrescoService, "id">): Promise<CrescoService> => {
-      return await this.request<CrescoService>("/services", {
+    create: async (service: any): Promise<CrescoService> => {
+      const payload = {
+        slug: service.slug,
+        name: service.name,
+        tagline: service.description || service.tagline || "",
+        startingPrice: service.from ?? service.startingPrice ?? 0,
+        duration: service.duration || "1 – 2 hours",
+        warranty: service.warranty || "3 months workmanship warranty",
+        image: service.image || "",
+        highlights: service.includes || service.highlights || [],
+      };
+      const res = await this.request<any>("/services", {
         method: "POST",
-        body: JSON.stringify(service),
+        body: JSON.stringify(payload),
       });
+      return normalizeService(res);
     },
 
-    update: async (idOrSlug: string, updates: Partial<CrescoService>): Promise<CrescoService> => {
-      return await this.request<CrescoService>(`/services/${encodeURIComponent(idOrSlug)}`, {
+    update: async (idOrSlug: string, updates: any): Promise<CrescoService> => {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.services.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      const payload: Record<string, any> = { ...updates };
+      if (updates.from !== undefined) payload.startingPrice = updates.from;
+      if (updates.description !== undefined) payload.tagline = updates.description;
+      if (updates.includes !== undefined) payload.highlights = updates.includes;
+
+      const res = await this.request<any>(`/services/${encodeURIComponent(id)}`, {
         method: "PATCH",
-        body: JSON.stringify(updates),
+        body: JSON.stringify(payload),
       });
+      return normalizeService(res);
     },
 
     delete: async (idOrSlug: string): Promise<{ success: boolean }> => {
-      return await this.request<{ success: boolean }>(`/services/${encodeURIComponent(idOrSlug)}`, {
+      let id = idOrSlug;
+      if (!isUuid(idOrSlug)) {
+        const item = await this.services.getBySlug(idOrSlug);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<{ success: boolean }>(`/services/${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
     },
@@ -332,7 +428,7 @@ export class CrescoClient {
 
     getByRef: async (ref: string): Promise<CrescoOrder | null> => {
       try {
-        const data = await this.request<CrescoOrder[]>(`/orders?where=ref:eq:${encodeURIComponent(ref)}&limit=1`);
+        const data = await this.request<CrescoOrder[]>(`/orders?where=ref:${encodeURIComponent(ref)}&limit=1`);
         return Array.isArray(data) && data.length > 0 ? data[0]! : null;
       } catch {
         return null;
@@ -349,10 +445,26 @@ export class CrescoClient {
       });
     },
 
-    updateStatus: async (ref: string, status: CrescoOrder["status"]): Promise<CrescoOrder> => {
-      return await this.request<CrescoOrder>(`/orders/${encodeURIComponent(ref)}`, {
+    updateStatus: async (idOrRef: string, status: CrescoOrder["status"]): Promise<CrescoOrder> => {
+      let id = idOrRef;
+      if (!isUuid(idOrRef)) {
+        const item = await this.orders.getByRef(idOrRef);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<CrescoOrder>(`/orders/${encodeURIComponent(id)}`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
+      });
+    },
+
+    delete: async (idOrRef: string): Promise<{ success: boolean }> => {
+      let id = idOrRef;
+      if (!isUuid(idOrRef)) {
+        const item = await this.orders.getByRef(idOrRef);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<{ success: boolean }>(`/orders/${encodeURIComponent(id)}`, {
+        method: "DELETE",
       });
     },
   };
@@ -369,7 +481,7 @@ export class CrescoClient {
 
     getByRef: async (ref: string): Promise<CrescoBooking | null> => {
       try {
-        const data = await this.request<CrescoBooking[]>(`/bookings?where=ref:eq:${encodeURIComponent(ref)}&limit=1`);
+        const data = await this.request<CrescoBooking[]>(`/bookings?where=ref:${encodeURIComponent(ref)}&limit=1`);
         return Array.isArray(data) && data.length > 0 ? data[0]! : null;
       } catch {
         return null;
@@ -386,10 +498,26 @@ export class CrescoClient {
       });
     },
 
-    updateStatus: async (ref: string, status: CrescoBooking["status"]): Promise<CrescoBooking> => {
-      return await this.request<CrescoBooking>(`/bookings/${encodeURIComponent(ref)}`, {
+    updateStatus: async (idOrRef: string, status: CrescoBooking["status"]): Promise<CrescoBooking> => {
+      let id = idOrRef;
+      if (!isUuid(idOrRef)) {
+        const item = await this.bookings.getByRef(idOrRef);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<CrescoBooking>(`/bookings/${encodeURIComponent(id)}`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
+      });
+    },
+
+    delete: async (idOrRef: string): Promise<{ success: boolean }> => {
+      let id = idOrRef;
+      if (!isUuid(idOrRef)) {
+        const item = await this.bookings.getByRef(idOrRef);
+        if (item?.id) id = item.id;
+      }
+      return await this.request<{ success: boolean }>(`/bookings/${encodeURIComponent(id)}`, {
+        method: "DELETE",
       });
     },
   };

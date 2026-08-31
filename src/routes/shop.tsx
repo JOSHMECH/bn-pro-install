@@ -76,7 +76,6 @@ const allBrands = [...new Set(products.map((p) => p.brand))].sort();
 
 const sortOptions = [
   { value: "newest", label: "Newest" },
-  { value: "rating", label: "Top rated" },
   { value: "price-asc", label: "Price: Low to high" },
   { value: "price-desc", label: "Price: High to low" },
 ] as const;
@@ -148,7 +147,6 @@ function Shop() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2_000_000]);
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
-  const [minRating, setMinRating] = useState(0);
   const [installableOnly, setInstallableOnly] = useState(false);
 
   const { data: dbProducts = products } = useQuery({
@@ -168,7 +166,6 @@ function Shop() {
     if (search.category && p.category !== search.category) return false;
     if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
     if (selectedBrands.size > 0 && !selectedBrands.has(p.brand)) return false;
-    if (minRating > 0 && p.rating < minRating) return false;
     if (installableOnly && !p.installFee) return false;
     return true;
   });
@@ -181,9 +178,6 @@ function Shop() {
     case "price-desc":
       list = [...list].sort((a, b) => b.price - a.price);
       break;
-    case "rating":
-      list = [...list].sort((a, b) => b.rating - a.rating);
-      break;
     default:
       break;
   }
@@ -192,13 +186,11 @@ function Shop() {
     (search.category ? 1 : 0) +
     (selectedBrands.size > 0 ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 2_000_000 ? 1 : 0) +
-    (minRating > 0 ? 1 : 0) +
     (installableOnly ? 1 : 0);
 
   function clearFilters() {
     setPriceRange([0, 2_000_000]);
     setSelectedBrands(new Set());
-    setMinRating(0);
     setInstallableOnly(false);
     navigate({ search: {} });
   }
@@ -276,34 +268,6 @@ function Shop() {
               />
               <span className="text-sm">{b}</span>
             </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Rating filter */}
-      <div>
-        <p className="mb-3 text-xs font-bold tracking-wider text-muted-foreground uppercase">
-          Min. rating
-        </p>
-        <div className="space-y-1">
-          {[4, 3, 2].map((r) => (
-            <button
-              key={r}
-              onClick={() => setMinRating(minRating === r ? 0 : r)}
-              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors ${
-                minRating === r ? "bg-amber-50 text-amber-700" : "hover:bg-secondary"
-              }`}
-            >
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className={`size-3 ${s <= r ? "fill-amber-400 text-amber-400" : "fill-muted text-muted"}`}
-                  />
-                ))}
-              </div>
-              <span>& up</span>
-            </button>
           ))}
         </div>
       </div>

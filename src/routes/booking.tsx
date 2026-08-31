@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CalendarCheck, CheckCircle2, MessageCircle } from "lucide-react";
@@ -13,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { services } from "@/lib/catalog";
+import { services as fallbackServices } from "@/lib/catalog";
 import { cresco } from "@/lib/cresco";
 import { naira } from "@/lib/format";
 import { whatsappLink } from "@/components/whatsapp";
@@ -31,7 +32,7 @@ type BookingSearch = { service?: string };
 export const Route = createFileRoute("/booking")({
   validateSearch: (search: Record<string, unknown>): BookingSearch => {
     const s = search["service"];
-    return services.some((sv) => sv.slug === s) ? { service: s as string } : {};
+    return fallbackServices.some((sv) => sv.slug === s) ? { service: s as string } : {};
   },
   head: () => ({
     meta: [
@@ -54,19 +55,25 @@ export const Route = createFileRoute("/booking")({
 
 function Booking() {
   const { service } = Route.useSearch();
+  const { data: servicesList = fallbackServices } = useQuery({
+    queryKey: ["services"],
+    queryFn: () => cresco.services.list(),
+    initialData: fallbackServices,
+  });
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
     email: "",
     address: "",
-    service: service ?? services[0]!.slug,
+    service: service ?? (servicesList[0]?.slug || "air-conditioner-installation"),
     date: "",
     slot: TIME_SLOTS[0]!,
     notes: "",
   });
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const chosen = services.find((s) => s.slug === form.service);
+  const chosen = servicesList.find((s) => s.slug === form.service) || servicesList[0];
   const today = new Date().toISOString().slice(0, 10);
 
   if (bookingRef) {
@@ -153,16 +160,19 @@ function Booking() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {services.map((s) => (
-                  <SelectItem key={s.slug} value={s.slug}>
-                    {s.name} — from {naira(s.from)}
-                  </SelectItem>
-                ))}
+                {servicesList.map((s) => {
+                  const price = s.from ?? (s as any).startingPrice ?? 0;
+                  return (
+                    <SelectItem key={s.slug} value={s.slug}>
+                      {s.name} — from {naira(price)}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
             {chosen && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Estimated time on site: {chosen.duration} · {chosen.warranty}
+                Estimated time on site: {chosen.duration || "1 – 2 hours"} · {chosen.warranty || "3 months warranty"}
               </p>
             )}
           </div>

@@ -113,24 +113,26 @@ function ProductPage() {
           </div>
         </div>
         {/* Rating row */}
-        <div className="mt-4 flex items-center gap-2">
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star
-                key={s}
-                className={`size-4 ${
-                  s <= Math.round(product.rating)
-                    ? "fill-amber-400 text-amber-400"
-                    : "fill-muted text-muted"
-                }`}
-              />
-            ))}
+        {product.reviewCount && product.reviewCount > 0 ? (
+          <div className="mt-4 flex items-center gap-2">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star
+                  key={s}
+                  className={`size-4 ${
+                    s <= Math.round(product.rating ?? 5)
+                      ? "fill-amber-400 text-amber-400"
+                      : "fill-muted text-muted"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">
+              {product.rating} ({product.reviewCount} customer reviews)
+            </span>
           </div>
-          <span className="text-sm font-medium text-muted-foreground">
-            {product.rating} ({product.reviewCount} customer reviews)
-          </span>
-        </div>
-        </div>
+        ) : null}
+      </div>
 
         <div>
           <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">

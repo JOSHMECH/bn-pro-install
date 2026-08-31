@@ -130,7 +130,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <StarRating rating={product.rating} count={product.reviewCount} />
+        {product.reviewCount && product.reviewCount > 0 ? (
+          <StarRating rating={product.rating ?? 5} count={product.reviewCount} />
+        ) : null}
 
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary transition-colors">
           {product.name}
