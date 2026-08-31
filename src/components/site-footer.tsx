@@ -88,12 +88,12 @@ export function SiteFooter() {
               <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
               Head office & showroom, Lagos Island, Nigeria
             </p>
-            <a href="tel:+2348030000000" className="flex items-center gap-2 hover:text-gold">
+            <a href="tel:+2348167054402" className="flex items-center gap-2 hover:text-gold">
               <Phone className="size-4 shrink-0 text-gold" />
               +234 803 000 0000
             </a>
             <a
-              href="mailto:hello@lumora.ng"
+              href="mailto:bnelectricalandhomeappliances@gmail.com"
               className="flex items-center gap-2 hover:text-gold"
             >
               <Mail className="size-4 shrink-0 text-gold" />
