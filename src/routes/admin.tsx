@@ -23,6 +23,7 @@ import {
   Home,
   LogOut,
   Eye,
+  EyeOff,
   Save,
   X,
   Star,
@@ -32,6 +33,9 @@ import {
   Mail,
   MapPin,
   Calendar,
+  Lock,
+  KeyRound,
+  ShieldCheck,
   Check,
   Menu,
   Filter,
@@ -526,8 +530,158 @@ function BookingModal({
   );
 }
 
+// ── Hardcoded Master Admin Credentials ─────────────────────────────────────────
+export const ADMIN_MASTER_CREDENTIALS = {
+  email: "admin@lumora.ng",
+  password: "LumoraAdmin#2026",
+  acceptablePasswords: [
+    "LumoraAdmin#2026",
+    "lumora2026",
+    "admin12345",
+    "admin123",
+    "admin",
+  ],
+};
+
+const ADMIN_AUTH_SESSION_KEY = "lumora_admin_authenticated";
+
+function AdminLoginGate({ onLoginSuccess }: { onLoginSuccess: () => void }) {
+  const [email, setEmail] = useState(ADMIN_MASTER_CREDENTIALS.email);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const trimmedPassword = password.trim();
+    const isMasterMatch =
+      trimmedPassword === ADMIN_MASTER_CREDENTIALS.password ||
+      ADMIN_MASTER_CREDENTIALS.acceptablePasswords.includes(trimmedPassword);
+
+    if (isMasterMatch) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(ADMIN_AUTH_SESSION_KEY, "true");
+        localStorage.setItem(ADMIN_AUTH_SESSION_KEY, "true");
+      }
+      toast.success("Authentication successful! Welcome to Admin Portal.");
+      onLoginSuccess();
+    } else {
+      toast.error("Invalid admin password. Please try again.");
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute -top-40 -left-40 size-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 size-96 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl text-white">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-950 shadow-lg shadow-amber-500/25">
+              <Lock className="size-7 stroke-[2.5]" />
+            </div>
+            <div>
+              <h1 className="font-display text-2xl font-black tracking-tight text-white">
+                Lumora Control Center
+              </h1>
+              <p className="mt-1 text-xs text-slate-400">
+                Executive & Database Management Portal
+              </p>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="mt-7 space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                Admin Email / Username
+              </label>
+              <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                placeholder="admin@lumora.ng"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  Master Password
+                </label>
+              </div>
+              <div className="relative flex items-center">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoFocus
+                  placeholder="Enter admin password..."
+                  className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-3.5 pr-10 text-sm text-white placeholder:text-slate-500 outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-slate-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.01]"
+            >
+              Sign In to Admin Portal
+            </Button>
+          </form>
+
+          {/* Footer */}
+          <div className="mt-6 border-t border-white/10 pt-4 text-center">
+            <Link
+              to="/"
+              className="text-xs font-semibold text-slate-400 hover:text-amber-400 transition-colors inline-flex items-center gap-1.5"
+            >
+              <Home className="size-3.5" /> Return to Customer Storefront
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Admin Component ─────────────────────────────────────────────────────
 function Admin() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      sessionStorage.getItem(ADMIN_AUTH_SESSION_KEY) === "true" ||
+      localStorage.getItem(ADMIN_AUTH_SESSION_KEY) === "true"
+    );
+  });
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(ADMIN_AUTH_SESSION_KEY);
+      localStorage.removeItem(ADMIN_AUTH_SESSION_KEY);
+    }
+    cresco.auth.logout();
+    setIsAuthenticated(false);
+    toast.success("Logged out of Admin Control Center");
+  };
+
   const [tab, setTab] = useState<AdminTab>("dashboard");
   const [productsList, setProductsList] = useState<Product[]>(initialProducts as Product[]);
   const [servicesList, setServicesList] = useState<Service[]>(initialServices);
@@ -729,6 +883,10 @@ function Admin() {
     );
   }, [customersList, customerSearch]);
 
+  if (!isAuthenticated) {
+    return <AdminLoginGate onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="flex min-h-screen bg-surface">
       {/* ── Desktop & Tablet Sidebar ───────────────────────────────────────── */}
@@ -778,6 +936,13 @@ function Admin() {
             <Home className="size-4 shrink-0 text-primary" />
             <span className="hidden lg:inline">Open Storefront ↗</span>
           </a>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+          >
+            <LogOut className="size-4 shrink-0" />
+            <span className="hidden lg:inline">Log Out</span>
+          </button>
         </div>
       </aside>
 
@@ -824,7 +989,7 @@ function Admin() {
               ))}
             </nav>
 
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border pt-3 space-y-1">
               <a
                 href="/"
                 target="_blank"
@@ -834,6 +999,16 @@ function Admin() {
                 <Home className="size-4 text-primary" />
                 <span>Open Storefront ↗</span>
               </a>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+              >
+                <LogOut className="size-4" />
+                <span>Log Out</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1054,7 +1229,7 @@ function Admin() {
               <span className="hidden sm:inline">Add Product</span>
             </Button>
 
-            {/* Admin User Profile Tag */}
+            {/* Admin User Profile & Logout Tag */}
             <div className="flex items-center gap-2 pl-2 border-l border-border">
               <div className="flex size-8.5 items-center justify-center rounded-xl bg-amber-500 text-xs font-bold text-white shadow-sm">
                 AD
@@ -1063,6 +1238,16 @@ function Admin() {
                 <p className="text-xs font-bold text-foreground leading-tight">Master Admin</p>
                 <p className="text-[10px] text-muted-foreground leading-tight">lumora.ng</p>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="h-8 px-2 text-xs text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 gap-1 ml-1"
+                title="Log out of Admin Portal"
+              >
+                <LogOut className="size-3.5" />
+                <span className="hidden md:inline">Log Out</span>
+              </Button>
             </div>
           </div>
         </header>
